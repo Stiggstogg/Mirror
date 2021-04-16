@@ -1,13 +1,20 @@
-// "Loading" scene: Loads all assets and shows a progress bar while loading
+/**
+ * "Loading" scene: Loads all assets and shows a progress bar while loading
+ */
 export default class loadingScene extends Phaser.Scene {
 
+    /**
+     * Constructor
+     */
     constructor() {
         super({
             key: 'Loading'
         });
     }
 
-    // load all assets (for all scenes)
+    /**
+     * load all assets (for all scenes)
+     */
     preload() {
 
         // get game width and height
@@ -48,7 +55,8 @@ export default class loadingScene extends Phaser.Scene {
 
 
         // load images
-        this.load.image('sponge', 'assets/images/sponge.jpeg');
+        this.load.image('background', 'assets/images/background.png');  // game background
+        this.load.image('block1', 'assets/images/Block1.png');  // block
 
 
         // load audio
@@ -56,7 +64,9 @@ export default class loadingScene extends Phaser.Scene {
 
     }
 
-    // change to "Home" scene
+    /**
+     * change to "Home" scene
+     */
     create() {
         this.scene.start('Home');
     }
