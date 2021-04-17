@@ -52,12 +52,15 @@ export default class loadingScene extends Phaser.Scene {
 
         }, this);
 
-
-
         // load images
         this.load.image('background', 'assets/images/background.png');  // game background
-        this.load.image('block1', 'assets/images/Block1.png');  // block
+        this.load.image('danger', 'assets/images/Danger.png');          // danger block
 
+        // load spritesheets
+        this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});  // block 1 (normal)
+        this.load.spritesheet('block2', 'assets/images/Block2.png', {frameWidth: 25, frameHeight: 25});  // block 2 (pirate)
+        this.load.spritesheet('block3', 'assets/images/Block3.png', {frameWidth: 25, frameHeight: 25});  // block 3 (glasses)
+        this.load.spritesheet('checkpoint', 'assets/images/Checkpoints.png', {frameWidth: 25, frameHeight: 25});  // checkpoints
 
         // load audio
         //this.load.audio('miss', 'assets/audio/Pew.mp3');

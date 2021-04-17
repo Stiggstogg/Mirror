@@ -1,5 +1,6 @@
 // import objects
-import Block from '../sprites/block.js'
+import BlockManager from '../helper/blockManager.js';
+import Levels from '../helper/levels.js';
 
 // "Game" scene: This is the main scene of the game
 export default class gameScene extends Phaser.Scene {
@@ -26,23 +27,44 @@ export default class gameScene extends Phaser.Scene {
         // add background
         this.add.sprite(0, 0, 'background').setOrigin(0, 0);
 
-        // add block
-        this.block = this.add.existing(new Block(this, 100, 100, 10));
+
+        // create block managers
+        this.blockManagerLeft = new BlockManager(this);
+        this.blockManagerRight = new BlockManager(this);
+
+        // create level
+        this.levels = new Levels();
+        this.levels.selectLevel(1);
+        this.levels.createLevel(this.blockManagerLeft, this.blockManagerRight);
 
         // add keys
-        //this.spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.keys = this.input.keyboard.addKeys('UP,DOWN,LEFT,RIGHT');
+        this.keysLeft = this.input.keyboard.addKeys('w,a,s,d,SPACE');
+        this.keysRight = this.input.keyboard.addKeys('UP,LEFT,DOWN,RIGHT,ENTER');
+
+        // add block change keys and event
+        this.input.keyboard.addKey('Space').on('down', function () { this.blockManagerLeft.activateNext() }, this);
+        this.input.keyboard.addKey('Enter').on('down', function () { this.blockManagerRight.activateNext() }, this);
 
     }
 
-    // update method
+    /**
+     * Update method
+     * @param {number} time
+     * @param {number} delta
+     */
     update(time, delta) {
 
-        if (this.keys.UP.isDown) { this.block.y -= this.block.speed; }
-        if (this.keys.DOWN.isDown) { this.block.y += this.block.speed; }
-        if (this.keys.LEFT.isDown) { this.block.x -= this.block.speed; }
-        if (this.keys.RIGHT.isDown) { this.block.x += this.block.speed; }
+        // movement left side
+        if (this.keysLeft.w.isDown) { this.blockManagerLeft.getActive().keyUp(); }
+        if (this.keysLeft.a.isDown) { this.blockManagerLeft.getActive().keyLeft(); }
+        if (this.keysLeft.s.isDown) { this.blockManagerLeft.getActive().keyDown(); }
+        if (this.keysLeft.d.isDown) { this.blockManagerLeft.getActive().keyRight(); }
 
+        // movement right side
+        if (this.keysRight.UP.isDown) { this.blockManagerRight.getActive().keyUp(); }
+        if (this.keysRight.LEFT.isDown) { this.blockManagerRight.getActive().keyLeft(); }
+        if (this.keysRight.DOWN.isDown) { this.blockManagerRight.getActive().keyDown(); }
+        if (this.keysRight.RIGHT.isDown) { this.blockManagerRight.getActive().keyRight(); }
 
     }
 
