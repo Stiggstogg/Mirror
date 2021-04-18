@@ -11,13 +11,15 @@ export default class Block extends Phaser.GameObjects.Sprite {
      * @param {number} y - y-coordinate
      * @param {number} block - type of the block, 1: normal, 2: pirate, 3: glasses
      * @param {string} side - side of the mirror where the block is placed ('left' or 'right')
+     * @param {number[]} missions - missions to complete (checkpoints to pass)
      */
-    constructor(scene, x, y, block, side) {
+    constructor(scene, x, y, block, side, missions) {
 
         super(scene, x, y, 'block' + block.toString());
 
-        this.block = block;                       // type of type of the block: 1: normal; 2: pirate; 3: glasses
+        this.block = block;                     // type of type of the block: 1: normal; 2: pirate; 3: glasses
         this.side = side;                       // side of the mirror where the block is placed ('left' or 'right')
+        this.missions = missions                // missions to complete (checkpoints to pass)
 
         this.setupSprite();
 
@@ -27,6 +29,9 @@ export default class Block extends Phaser.GameObjects.Sprite {
      * Setup the sprite (orientation, borders, activation state)
      */
     setupSprite() {
+
+        // blocks should be always on top!
+        this.depth = 1;
 
         /**
          * Movement boundaries for x and y coordinate. Each array contains the min and max values.
@@ -51,7 +56,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
          * Speed of the block.
          * @type {number}
          */
-        this.speed = 10;
+        this.speed = 3;
 
         // set properties according to the side
         if (this.side === 'right') {
@@ -71,7 +76,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
         switch (this.block) {
             case 2:                 // pirate
 
-                this.speed = 10;    // speed
+                this.speed = 3;    // speed
 
                 this.moveVector = {         // movement vector for pirate: both directions reversed
                     leftright: -1,
@@ -82,7 +87,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
 
             case 3:                 // glasses
 
-                this.speed = 10;    // speed
+                this.speed = 3;    // speed
 
                 this.moveVector = {         // movement vector for glasses: Left / right movement reversed
                     leftright: -1,
@@ -90,6 +95,24 @@ export default class Block extends Phaser.GameObjects.Sprite {
                 };
 
                 break;
+        }
+
+    }
+
+    /**
+     * Checks if a block has the provided checkpoint in the list of the next mission. If yes, it is fulfilled and
+     * removed from the list of missions. This is usually applied when the block is standing on this checkpoint.
+     * @param {Phaser.GameObjects.Group} checkpoint - Checkpoint (usually the checkpoint on which the block is currently standing.
+     */
+    checkMission(checkpoint) {
+
+        if (checkpoint.cpNum === this.missions[0]) {
+            console.log('Mission complete');
+            this.missions.shift();
+
+            if (this.missions.length < 1) {
+                console.log('All missions completed');
+            }
         }
 
     }

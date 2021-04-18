@@ -5,13 +5,12 @@ export default class BlockManager {
 
     /**
      * @constructor
-     * @param {Block} firstBlock - First block which is added to the block manager
      * @param {Phaser.Scene} scene - Scene where the block will be placed
      */
     constructor(scene) {
 
         this.scene = scene;
-        this.blocks = [];
+        this.blocks = scene.add.group();
         this.activeBlock = 0;                   // number of the active block
 
     }
@@ -22,11 +21,10 @@ export default class BlockManager {
      */
     addBlock(block) {
 
-        this.scene.add.existing(block);
-        this.blocks.push(block);
+        this.blocks.add(this.scene.add.existing(block));
 
         // activate it if it is the first block
-        if (this.blocks.length === 1) {
+        if (this.blocks.getLength() === 1) {
             this.getActive().act();
         }
 
@@ -39,7 +37,7 @@ export default class BlockManager {
 
         this.getActive().deact();
 
-        if (this.activeBlock >= this.blocks.length - 1) {
+        if (this.activeBlock >= this.blocks.getLength() - 1) {
             this.activeBlock = 0;
         }
         else {
@@ -55,7 +53,10 @@ export default class BlockManager {
      * @returns {Block}
      */
     getActive() {
-        return this.blocks[this.activeBlock];
+
+        let blocks = this.blocks.getChildren();
+
+        return blocks[this.activeBlock];
     }
 
 }
