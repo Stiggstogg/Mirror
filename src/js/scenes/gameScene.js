@@ -14,6 +14,15 @@ export default class gameScene extends Phaser.Scene {
     // initiate scene parameters
     init() {
 
+        // parameters
+        this.originLeft = {x: 10, y: 10};                       // origin of the left side (top left) (px)
+        this.originRight = {x: 630, y: this.originLeft.y};      // origin of the right side (top right) (px)
+        this.gridSize = 12.5;                                   // size of the grid to place objects (px)
+
+        this.mirrorTolerance = 25;                              // mirror tolerance (px)
+
+        this.maxVelocity = 3;                                   // maximum velocity of a block in (px/frame)
+
     }
 
     // load assets
@@ -41,7 +50,7 @@ export default class gameScene extends Phaser.Scene {
         this.checkpointGroupRight = this.add.group();
 
         // create level
-        this.levels = new Levels();
+        this.levels = new Levels(this.originLeft, this.originRight, this.gridSize);
         this.levels.selectLevel(1);
         this.levels.createLevel(this,
             this.blockManagerLeft, this.blockManagerRight,
@@ -85,6 +94,9 @@ export default class gameScene extends Phaser.Scene {
         this.collisionBlockBlock(this.blockManagerLeft);                                    // blocks and blocks
         this.collisionBlockBlock(this.blockManagerRight);
 
+        // check if the block are still mirrored (within tolerance)
+        this.mirrorCheck(this.blockManagerLeft, this.blockManagerRight);
+
 
 
     }
@@ -101,6 +113,9 @@ export default class gameScene extends Phaser.Scene {
                 break;
             case 'block':
                 console.log('Game Over: Collision with Block!');
+                break;
+            case 'mirror':
+                console.log('Game Over: Not mirrored!');
                 break;
             default:
 
@@ -173,6 +188,23 @@ export default class gameScene extends Phaser.Scene {
 
     }
 
+    mirrorCheck(blockManLeft, blockManRight) {
 
+        let blocksLeft = blockManLeft.blocks.getChildren();
+        let blocksRight = blockManRight.blocks.getChildren();
+
+        for (let i = 0; i < blocksLeft.length; i++) {
+
+            // get for each side and the corresponding block the x and y coordinate relative to the origin (left side:
+            // top left corner, right side: top right corner). Then check if the difference between the x or y coordinate
+            // of one block on the left side to the block of the right side is higher than the allowed tolerance. If
+            // one coordinate is higher, then the blocks are not mirrored anymore.
+            if (Math.abs((blocksLeft[i].x - this.originLeft.x) - (this.originRight.x - blocksRight[i].x)) > this.mirrorTolerance ||
+                Math.abs((blocksLeft[i].y - this.originLeft.y) - (blocksRight[i].y - this.originRight.y) > this.mirrorTolerance)) {
+                this.gameOver('mirror');
+            }
+        }
+
+    }
 
 }

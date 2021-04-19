@@ -9,14 +9,21 @@ export default class Levels {
      * Contains all levels and manages them
      * @constructor
      */
-    constructor() {
+    /**
+     * Contains all levels and manages them
+     * @constructor
+     * @param {{x: number, y: number}} originLeft - origin (coordinates) of the top left corner of the left side
+     * @param {{x: number, y: number}} originRight - origin (coordinates) of the top right corner of the right side
+     * @param {number} gridSize - grid size for the placement of objects in the level
+     */
+    constructor(originLeft, originRight, gridSize) {
 
         this.levels = [];
 
-        this.gridSize = 12.5;
+        this.gridSize = gridSize;
 
-        this.origin = {x: 10, y: 10};
-        this.originOffsetRight = 620;
+        this.originLeft = originLeft;
+        this.originRight = originRight;
 
         this.levels.push(this.level1());
         this.selectedLevel = 1;
@@ -73,12 +80,12 @@ export default class Levels {
             for (let c = 0; c < layout[r].length; c++) {
 
                 position.left = {
-                    x: this.origin.x + this.gridSize * c,
-                    y: this.origin.y + this.gridSize * r
+                    x: this.originLeft.x + this.gridSize * c,
+                    y: this.originRight.y + this.gridSize * r
                 }
 
                 position.right = {
-                    x: this.origin.x + this.originOffsetRight - this.gridSize * c,
+                    x: this.originRight.x - this.gridSize * c,
                     y: position.left.y
                 }
 

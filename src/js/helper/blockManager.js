@@ -35,6 +35,8 @@ export default class BlockManager {
      */
     activateNext() {
 
+        console.log(this.activeBlock);
+
         this.getActive().deact();
 
         if (this.activeBlock >= this.blocks.getLength() - 1) {
@@ -45,6 +47,8 @@ export default class BlockManager {
         }
 
         this.getActive().act();
+
+        console.log(this.activeBlock);
 
     }
 
