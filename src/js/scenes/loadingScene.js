@@ -55,6 +55,8 @@ export default class loadingScene extends Phaser.Scene {
         // load images
         this.load.image('background', 'assets/images/background.png');  // game background
         this.load.image('danger', 'assets/images/Danger.png');          // danger block
+        this.load.image('indicator', 'assets/images/Indicator.png');    // indicator
+        this.load.image('pointer', 'assets/images/Pointer.png');        // pointer
 
         // load spritesheets
         this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});  // block 1 (normal)

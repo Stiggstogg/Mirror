@@ -19,7 +19,7 @@ export default class gameScene extends Phaser.Scene {
         this.originRight = {x: 630, y: this.originLeft.y};      // origin of the right side (top right) (px)
         this.gridSize = 12.5;                                   // size of the grid to place objects (px)
 
-        this.mirrorTolerance = 25;                              // mirror tolerance (px)
+        this.mirrorTolerance = 100;                              // mirror tolerance (px)
 
         this.maxVelocity = 3;                                   // maximum velocity of a block in (px/frame)
 
@@ -36,6 +36,9 @@ export default class gameScene extends Phaser.Scene {
         // add background
         this.add.sprite(0, 0, 'background').setOrigin(0, 0);
 
+        // add indicator
+        this.add.sprite(549, 395, 'indicator');
+        this.mirrorPointer = this.add.sprite(549, 395, 'pointer').setOrigin(0.79, 0.5);
 
         // create block managers
         this.blockManagerLeft = new BlockManager(this);
@@ -64,6 +67,9 @@ export default class gameScene extends Phaser.Scene {
         // add block change keys and event
         this.input.keyboard.addKey('Space').on('down', function () { this.blockManagerLeft.activateNext() }, this);
         this.input.keyboard.addKey('Enter').on('down', function () { this.blockManagerRight.activateNext() }, this);
+
+        // mirror value
+        this.mirrorValue = 0;
 
     }
 
@@ -190,20 +196,40 @@ export default class gameScene extends Phaser.Scene {
 
     mirrorCheck(blockManLeft, blockManRight) {
 
+        this.mirrorValue = 0;           // reset mirror value
+
         let blocksLeft = blockManLeft.blocks.getChildren();
         let blocksRight = blockManRight.blocks.getChildren();
 
+        let left = {x: 0, y: 0};
+        let right = {x: 0, y:0};
+        let diff = {x: 0, y: 0};
+
         for (let i = 0; i < blocksLeft.length; i++) {
 
-            // get for each side and the corresponding block the x and y coordinate relative to the origin (left side:
-            // top left corner, right side: top right corner). Then check if the difference between the x or y coordinate
-            // of one block on the left side to the block of the right side is higher than the allowed tolerance. If
-            // one coordinate is higher, then the blocks are not mirrored anymore.
-            if (Math.abs((blocksLeft[i].x - this.originLeft.x) - (this.originRight.x - blocksRight[i].x)) > this.mirrorTolerance ||
-                Math.abs((blocksLeft[i].y - this.originLeft.y) - (blocksRight[i].y - this.originRight.y) > this.mirrorTolerance)) {
-                this.gameOver('mirror');
+            // calculate coordinate of the corresponding block to the origin. Origin left side: top left; Origin right side: top right
+            left = {
+                x: blocksLeft[i].x - this.originLeft.x,
+                y: blocksLeft[i].y - this.originLeft.y
+            };
+            right = {
+                x: this.originRight.x - blocksRight[i].x,
+                y: blocksRight[i].y - this.originRight.y
+            };
+
+            // calculate difference between the coordinates
+            diff = {
+                x: Math.abs(left.x - right.x),
+                y: Math.abs(left.y - right.y)
             }
+
+            // add differences (x and y) to the total mirror value
+            this.mirrorValue += diff.x + diff.y;
+
         }
+
+        // update pointer
+        this.mirrorPointer.angle = -49 + (this.mirrorValue / this.mirrorTolerance * 280);
 
     }
 
