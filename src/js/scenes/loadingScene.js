@@ -1,3 +1,5 @@
+import WebFontFile from "../helper/webFontLoader";
+
 /**
  * "Loading" scene: Loads all assets and shows a progress bar while loading
  */
@@ -20,6 +22,9 @@ export default class loadingScene extends Phaser.Scene {
         // get game width and height
         let gw = this.sys.game.config.width;
         let gh = this.sys.game.config.height;
+
+        // load fonts
+        this.load.addFile(new WebFontFile(this.load, ['VT323']));
 
         // show logo
         let logo = this.add.sprite(gw/2, gh/2 - gh*0.1, 'logo'); // logo is already preloaded in 'Boot' scene
@@ -57,6 +62,8 @@ export default class loadingScene extends Phaser.Scene {
         this.load.image('danger', 'assets/images/Danger.png');          // danger block
         this.load.image('indicator', 'assets/images/Indicator.png');    // indicator
         this.load.image('pointer', 'assets/images/Pointer.png');        // pointer
+        this.load.image('arrow', 'assets/images/Arrow.png');            // arrow
+        this.load.image('frame', 'assets/images/Frame.png');            // frame (for text)
 
         // load spritesheets
         this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});  // block 1 (normal)

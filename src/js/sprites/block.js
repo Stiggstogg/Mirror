@@ -17,9 +17,10 @@ export default class Block extends Phaser.GameObjects.Sprite {
 
         super(scene, x, y, 'block' + block.toString());
 
-        this.block = block;                     // type of type of the block: 1: normal; 2: pirate; 3: glasses
-        this.side = side;                       // side of the mirror where the block is placed ('left' or 'right')
-        this.missions = missions                // missions to complete (checkpoints to pass)
+        this.scene = scene;                             // scene where the block is in
+        this.block = block;                             // type of type of the block: 1: normal; 2: pirate; 3: glasses
+        this.side = side;                               // side of the mirror where the block is placed ('left' or 'right')
+        this.missions = missions                        // missions to complete (checkpoints to pass)
 
         this.setupSprite();
 
@@ -59,16 +60,16 @@ export default class Block extends Phaser.GameObjects.Sprite {
         this.speed = 3;
 
         // set properties according to the side
-        if (this.side === 'right') {
+        if (this.side === 'left') {
+            this.createMissionState();          // create only for the left side the mission state images, otherwise they are doubled
+        }
+        else {
 
             this.flipX = true;              // orientation
 
             // movement boundaries
             this.moveBounds.x[0] += 320;
             this.moveBounds.x[1] += 320;
-
-        }
-        else {
 
         }
 
@@ -100,19 +101,64 @@ export default class Block extends Phaser.GameObjects.Sprite {
     }
 
     /**
-     * Checks if a block has the provided checkpoint in the list of the next mission. If yes, it is fulfilled and
-     * removed from the list of missions. This is usually applied when the block is standing on this checkpoint.
-     * @param {Phaser.GameObjects.Group} checkpoint - Checkpoint (usually the checkpoint on which the block is currently standing.
+     * Creates the mission state information at the bottom part of the screen (icons which missions need to be fulfilled)
+     * This is only created for the blocks on the left side, otherwise it would be doubled.
+     */
+    createMissionState() {
+
+        this.missionStateImages = this.scene.add.group();    // images for the mission state bar
+
+        let yStart = 345;
+        let xStart = 43
+        let rowSpace = 50;
+        let colSpace = 38;
+
+        let y = yStart + (this.block - 1) * rowSpace;
+        let xArrow = 0;
+        let xMission = 0;
+
+        // create icon
+        this.missionStateImages.add(this.scene.add.image(xStart, y, this.texture.key, 1));
+
+        // create arrows and mission icons
+        for (let i in this.missions) {
+
+            xArrow = xStart + colSpace * (1 + i*2);
+            xMission = xStart + colSpace * (2 + i*2);
+
+            this.scene.add.image(xArrow, y, 'arrow');
+            this.missionStateImages.add(this.scene.add.sprite(xMission, y, 'checkpoint', this.missions[i] - 1));
+
+        }
+
+    }
+
+    /**
+     * Checks if a block has the provided checkpoint in the list as the next mission. If yes, true is returned.
+     * @param {Phaser.GameObjects.Group} checkpoint - Checkpoint (usually the checkpoint on which the block is currently standing).
      */
     checkMission(checkpoint) {
+        return checkpoint.cpNum === this.missions[0];
+    }
+
+    /**
+     * Checks if a block has the provided checkpoint in the list as the next mission and fulfills it (usually when
+     * both blocks are standing on their next checkpoints) by removing it from the list of missions. Mark the corresponding
+     * mission image as fulfilled (needs to be done only for the left side).
+     * @param {Phaser.GameObjects.Group} checkpoint - Checkpoint (usually the checkpoint on which the block is currently standing).
+     */
+    fulfillMission(checkpoint) {
 
         if (checkpoint.cpNum === this.missions[0]) {
-            console.log('Mission complete');
-            this.missions.shift();
+            this.missions.shift();                                                        // remove mission from the list
 
-            if (this.missions.length < 1) {
-                console.log('All missions completed');
+            // if it is a block on the left side adapt the corresponding mission state bar, by marking the mission as fulfilled
+            if (this.side ==='left') {
+
+                let missionImageNr = this.missionStateImages.getLength() - this.missions.length - 1;
+                this.missionStateImages.getChildren()[missionImageNr].setAlpha(0.5);
             }
+
         }
 
     }

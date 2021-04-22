@@ -1,3 +1,5 @@
+import Levels from "../helper/levels";
+
 /**
  * "Home" scene: Main game menu scene
  */
@@ -31,7 +33,7 @@ export default class gameScene extends Phaser.Scene {
         this.bgZone.setInteractive();
         this.bgZone.on('pointerdown', function (pointer) {
 
-            this.scene.start('Game');
+            this.scene.start('Game', {newGame: true, finished: false});
 
         }, this);
 
