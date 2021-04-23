@@ -39,6 +39,14 @@ export default class gameScene extends Phaser.Scene {
         // Add keyboard inputs
         this.addKeys();
 
+        this.section1 = this.sound.add('section1');
+        this.section2 = this.sound.add('section2');
+
+        this.section1.on('complete', function() { this.section2.play()}, this);
+        this.section2.on('complete', function() { this.section1.play()}, this);
+
+        this.section2.play();
+
     }
 
     /**

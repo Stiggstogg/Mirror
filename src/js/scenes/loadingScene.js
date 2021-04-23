@@ -73,7 +73,14 @@ export default class loadingScene extends Phaser.Scene {
         this.load.spritesheet('eyes', 'assets/images/Eyes.png', {frameWidth: 240, frameHeight: 44});              // Eyes
 
         // load audio
-        //this.load.audio('miss', 'assets/audio/Pew.mp3');
+        this.load.audio('cnorm', 'assets/audio/Cnorm.mp3');
+        this.load.audio('fnorm', 'assets/audio/Fnorm.mp3');
+        this.load.audio('gnorm', 'assets/audio/Gnorm.mp3');
+        this.load.audio('anorm', 'assets/audio/Anorm.mp3');
+        this.load.audio('cfast', 'assets/audio/Cfast.mp3');
+        this.load.audio('ffast', 'assets/audio/Ffast.mp3');
+        this.load.audio('gfast', 'assets/audio/Gfast.mp3');
+        this.load.audio('afast', 'assets/audio/Afast.mp3');
 
     }
 
