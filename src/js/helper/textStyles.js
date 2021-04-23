@@ -56,6 +56,27 @@ export default class TextStyle {
             color: '#6dbcb9'
         });
 
+        // style 7 (menu title)
+        this.styles.push({
+            fontFamily: 'VT323',
+            fontSize: '60px',
+            color: '#372134'
+        });
+
+        // style 8 (menu inactive)
+        this.styles.push({
+            fontFamily: 'VT323',
+            fontSize: '40px',
+            color: '#474476'
+        });
+
+        // style 9 (menu active)
+        this.styles.push({
+            fontFamily: 'VT323',
+            fontSize: '50px',
+            color: '#8cefb6'
+        });
+
     }
 
     /**

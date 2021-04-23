@@ -20,7 +20,7 @@ export default class gameScene extends Phaser.Scene {
         this.originRight = {x: 630, y: this.originLeft.y};      // origin of the right side (top right) (px)
         this.gridSize = 12.5;                                   // size of the grid to place objects (px)
 
-        this.mirrorTolerance = 1000;                              // mirror tolerance (px)
+        this.mirrorTolerance = 100;                              // mirror tolerance (px)
 
         this.maxVelocity = 3;                                   // maximum velocity of a block in (px/frame)
 
@@ -48,9 +48,9 @@ export default class gameScene extends Phaser.Scene {
         // add background
         this.add.image(0, 0, 'background').setOrigin(0, 0);
 
-        // add indicator
-        this.add.image(549, 395, 'indicator');
-        this.mirrorPointer = this.add.sprite(549, 395, 'pointer').setOrigin(0.79, 0.5);
+        // add indicator and pointer
+        let indicator = this.add.image(485, 360, 'indicator').setOrigin(0.5);
+        this.mirrorPointer = this.add.sprite(indicator.x - indicator.width / 2 + 12, indicator.y + indicator.height / 2 - 14, 'pointer').setOrigin(0.5);
 
         // add frame
         this.frame = this.add.image(320, 235, 'frame').setOrigin(0.5, 0.5).setDepth(2);
@@ -63,7 +63,7 @@ export default class gameScene extends Phaser.Scene {
         this.styles = new TextStyle();                  // create the text style object
 
         // game timer
-        this.gameTime = this.add.text(400, 395, this.convertTime(0), this.styles.get(0)).setOrigin(0.5);
+        this.gameTime = this.add.text(50, 50, this.convertTime(0), this.styles.get(0)).setOrigin(0.5);
 
         // create block managers
         this.blockManagerLeft = new BlockManager(this);
@@ -325,7 +325,6 @@ export default class gameScene extends Phaser.Scene {
 
     }
 
-
     /**
      * Checks if there are any open missions. If no the level is completed.
      * @param {BlockManager} blockManLeft - Block manager of the left side
@@ -482,10 +481,11 @@ export default class gameScene extends Phaser.Scene {
         }
 
         // update pointer
-        this.mirrorPointer.angle = -49 + (this.mirrorValue / this.mirrorTolerance * 280);
+        this.mirrorPointer.x = 367 + (this.mirrorValue / this.mirrorTolerance * 236);
 
         // trigger game over if mirrorValue is above Tolerance
-        if (this.mirrorValue > this.mirrorTolerance){
+        if (this.mirrorValue >= this.mirrorTolerance){
+            this.mirrorPointer.x = 603;
             this.gameOver('mirror');
         }
 
