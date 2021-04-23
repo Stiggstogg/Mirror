@@ -7,28 +7,28 @@ export default class TextStyle {
 
         this.styles = [];
 
-        // style 0
+        // style 0 ("Day x" in frame)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '50px',
             color: '#8cefb6'
         });
 
-        // style 1
+        // style 1 ("Press" in frame)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '22px',
             color: '#8cefb6'
         });
 
-        // style 2
+        // style 2 (game timer)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '40px',
             color: '#8cefb6'
         });
 
-        // style 3
+        // style 3 (GAME OVER)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '70px',
@@ -49,7 +49,7 @@ export default class TextStyle {
             color: '#6dbcb9'
         });
 
-        // style 6
+        // style 6 (Time table in frame;)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '25px',

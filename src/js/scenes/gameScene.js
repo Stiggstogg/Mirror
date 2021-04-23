@@ -49,8 +49,11 @@ export default class gameScene extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0, 0);
 
         // add indicator and pointer
-        let indicator = this.add.image(485, 360, 'indicator').setOrigin(0.5);
+        let indicator = this.add.image(485, 400, 'indicator').setOrigin(0.5);
         this.mirrorPointer = this.add.sprite(indicator.x - indicator.width / 2 + 12, indicator.y + indicator.height / 2 - 14, 'pointer').setOrigin(0.5);
+
+        // add eyes
+        this.eyes = this.add.sprite(485, 345, 'eyes', 0).setOrigin(0.5);
 
         // add frame
         this.frame = this.add.image(320, 235, 'frame').setOrigin(0.5, 0.5).setDepth(2);
@@ -63,7 +66,7 @@ export default class gameScene extends Phaser.Scene {
         this.styles = new TextStyle();                  // create the text style object
 
         // game timer
-        this.gameTime = this.add.text(50, 50, this.convertTime(0), this.styles.get(0)).setOrigin(0.5);
+        this.gameTime = this.add.text(485, 445, this.convertTime(0), this.styles.get(2)).setOrigin(0.5);
 
         // create block managers
         this.blockManagerLeft = new BlockManager(this);
@@ -136,6 +139,7 @@ export default class gameScene extends Phaser.Scene {
 
             // update timer
             this.updateTime();
+
         }
 
     }
@@ -148,6 +152,7 @@ export default class gameScene extends Phaser.Scene {
 
         this.state = 2;                // set the state to the game over state
         this.frame.setVisible(true);   // make the frame visible
+        this.eyes.stop();                // stop the eye animation
 
         this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30,
             'Day ' + this.levels.selectedLevel, this.styles.get(0))
@@ -227,6 +232,8 @@ export default class gameScene extends Phaser.Scene {
         this.texts = [];                    // empty array
         this.frame.setVisible(false);       // hide frame
         this.gameStartTime = new Date();    // set game start time
+
+        this.eyeAnimations();
 
     }
 
@@ -530,6 +537,46 @@ export default class gameScene extends Phaser.Scene {
         let currentGameTime = now - this.gameStartTime;
 
         this.gameTime.setText(this.convertTime(currentGameTime));
+
+    }
+
+    /**
+     * Creates the eye animations which will run forever.
+     */
+    eyeAnimations() {
+
+        this.eyeAnimationSequence = [];     // eye animation sequence array
+        this.eyeAnimationCurrent = 0;       // counter for the current eye animation
+
+        // sequence of the animations (including their delay)
+        this.eyeAnimationSequence.push({key: 'midToRight', delay: 1000});
+        this.eyeAnimationSequence.push({key: 'rightToMid', delay: 1500});
+        this.eyeAnimationSequence.push({key: 'midToLeft', delay: 2000});
+        this.eyeAnimationSequence.push({key: 'leftToRight', delay: 3000});
+        this.eyeAnimationSequence.push({key: 'rightToMid', delay: 1000});
+        this.eyeAnimationSequence.push({key: 'midToRight', delay: 500});
+        this.eyeAnimationSequence.push({key: 'rightToMid', delay: 500});
+        this.eyeAnimationSequence.push({key: 'midToLeft', delay: 1000});
+        this.eyeAnimationSequence.push({key: 'leftToMid', delay: 2000});
+
+        // waits until an animation is complete and then starts the next one
+        this.eyes.on('animationcomplete', function(){
+
+            // go to the next animation
+            if (this.eyeAnimationCurrent >= this.eyeAnimationSequence.length - 1) {
+                this.eyeAnimationCurrent = 0;
+            }
+            else {
+                this.eyeAnimationCurrent++;
+            }
+
+            // start the animation (with delay)
+            this.eyes.playAfterDelay(this.eyeAnimationSequence[this.eyeAnimationCurrent].key, this.eyeAnimationSequence[this.eyeAnimationCurrent].delay);
+
+        }, this);
+
+        // start the first animation
+        this.eyes.playAfterDelay(this.eyeAnimationSequence[this.eyeAnimationCurrent].key, this.eyeAnimationSequence[this.eyeAnimationCurrent].delay);
 
     }
 

@@ -66,10 +66,11 @@ export default class loadingScene extends Phaser.Scene {
         this.load.image('frame', 'assets/images/Frame.png');            // frame (for text)
 
         // load spritesheets
-        this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});  // block 1 (normal)
-        this.load.spritesheet('block2', 'assets/images/Block2.png', {frameWidth: 25, frameHeight: 25});  // block 2 (pirate)
-        this.load.spritesheet('block3', 'assets/images/Block3.png', {frameWidth: 25, frameHeight: 25});  // block 3 (glasses)
-        this.load.spritesheet('checkpoint', 'assets/images/Checkpoints.png', {frameWidth: 25, frameHeight: 25});  // checkpoints
+        this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});             // block 1 (normal)
+        this.load.spritesheet('block2', 'assets/images/Block2.png', {frameWidth: 25, frameHeight: 25});             // block 2 (pirate)
+        this.load.spritesheet('block3', 'assets/images/Block3.png', {frameWidth: 25, frameHeight: 25});             // block 3 (glasses)
+        this.load.spritesheet('checkpoint', 'assets/images/Checkpoints.png', {frameWidth: 25, frameHeight: 25});    // checkpoints
+        this.load.spritesheet('eyes', 'assets/images/Eyes.png', {frameWidth: 240, frameHeight: 44});              // Eyes
 
         // load audio
         //this.load.audio('miss', 'assets/audio/Pew.mp3');
@@ -80,7 +81,60 @@ export default class loadingScene extends Phaser.Scene {
      * change to "Home" scene
      */
     create() {
+
+        // add animations
+        this.addAnimations();
+
         this.scene.start('Home');
+    }
+
+    addAnimations() {
+
+        // eyes animations
+        let frameRate = 50;
+
+        this.anims.create({
+            key: 'midToRight',
+            frames: this.anims.generateFrameNames('eyes', {frames: [0, 1, 2, 3, 4, 5]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
+        this.anims.create({
+            key: 'rightToMid',
+            frames: this.anims.generateFrameNames('eyes', {frames: [5, 4, 3, 2, 1, 0]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
+        this.anims.create({
+            key: 'midToLeft',
+            frames: this.anims.generateFrameNames('eyes', {frames: [0, 6, 7, 8, 9, 10]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
+        this.anims.create({
+            key: 'leftToMid',
+            frames: this.anims.generateFrameNames('eyes', {frames: [10, 9, 8, 7, 6, 0]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
+        this.anims.create({
+            key: 'leftToRight',
+            frames: this.anims.generateFrameNames('eyes', {frames: [10, 9, 8, 7, 6, 0, 1, 2, 3, 4, 5]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
+        this.anims.create({
+            key: 'rightToLeft',
+            frames: this.anims.generateFrameNames('eyes', {frames: [5, 4, 3, 2, 1, 0, 6, 7, 8, 9, 10]}),
+            frameRate: frameRate,
+            paused: true
+        });
+
     }
 
 }
