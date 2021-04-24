@@ -35,6 +35,10 @@ export default class gameScene extends Phaser.Scene {
         this.state = -1;                // state of the game: -1: before the level, 0: while playing, 1: game finished, 2: game over
         this.finished = data.finished;  // true if the game is finished!
 
+        // get the music objects
+        this.musicMenu = data.musicMenu;
+        this.musicPlaying = data.musicPlaying;
+
     }
 
     // load assets
@@ -150,6 +154,10 @@ export default class gameScene extends Phaser.Scene {
      */
     gameOver(reason) {
 
+        // stop playing music start menu music
+        this.musicMenu.start();
+        this.musicPlaying.stop();
+
         this.state = 2;                // set the state to the game over state
         this.frame.setVisible(true);   // make the frame visible
         this.eyes.stop();                // stop the eye animation
@@ -180,10 +188,10 @@ export default class gameScene extends Phaser.Scene {
                 this.blockManagerLeft.activateNext();
                 break;
             case 1:
-                this.scene.start('Game', {newGame: true, finished: false});
+                this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
             case 2:
-                this.scene.start('Game', {newGame: true, finished: false});
+                this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
         }
 
@@ -202,10 +210,10 @@ export default class gameScene extends Phaser.Scene {
                 this.blockManagerRight.activateNext();
                 break;
             case 1:
-                this.scene.start('Game', {newGame: true, finished: false});
+                this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
             case 2:
-                this.scene.start('Game', {newGame: true, finished: false});
+                this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
         }
 
@@ -217,10 +225,17 @@ export default class gameScene extends Phaser.Scene {
     escKey() {
 
         this.scene.start('Home');           // go back to main menu
+        this.musicMenu.stop();
+        this.musicPlaying.stop();
 
     }
 
     startGame() {
+
+        // fade out menu music, fade in playing music
+        this.musicMenu.stop();
+        this.musicPlaying.changeMode(0);
+        this.musicPlaying.start();
 
         this.state = 0;                 // change state to gaming
 
@@ -364,17 +379,20 @@ export default class gameScene extends Phaser.Scene {
      */
     levelComplete() {
 
+        this.musicMenu.start(this);
+        this.musicPlaying.stop(this);
+
         // store the time used for this level
         this.levels.levelTimes.push(new Date() - this.gameStartTime);
 
         // If it is the last level, start a new level but with finished = true, so that the game finished things will
         // trigger. If it is not the last level, increase the level and start it.
         if (this.levels.lastLevel()) {
-            this.scene.start('Game', {newGame: false, finished: true, levels: this.levels});
+            this.scene.start('Game', {newGame: false, finished: true, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
         else {
             this.levels.nextLevel();
-            this.scene.start('Game', {newGame: false, finished: false, levels: this.levels});
+            this.scene.start('Game', {newGame: false, finished: false, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
     }
 
@@ -489,6 +507,14 @@ export default class gameScene extends Phaser.Scene {
 
         // update pointer
         this.mirrorPointer.x = 367 + (this.mirrorValue / this.mirrorTolerance * 236);
+
+        // change music mode if mirrorValue is above 66 %
+        if (this.mirrorValue >= this.mirrorTolerance*0.66) {
+            this.musicPlaying.changeMode(1);
+        }
+        else {
+            this.musicPlaying.changeMode(0);
+        }
 
         // trigger game over if mirrorValue is above Tolerance
         if (this.mirrorValue >= this.mirrorTolerance){

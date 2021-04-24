@@ -81,6 +81,10 @@ export default class loadingScene extends Phaser.Scene {
         this.load.audio('ffast', 'assets/audio/Ffast.mp3');
         this.load.audio('gfast', 'assets/audio/Gfast.mp3');
         this.load.audio('afast', 'assets/audio/Afast.mp3');
+        this.load.audio('cmenu', 'assets/audio/Cmenu.mp3');
+        this.load.audio('fmenu', 'assets/audio/Fmenu.mp3');
+        this.load.audio('gmenu', 'assets/audio/Gmenu.mp3');
+        this.load.audio('amenu', 'assets/audio/Amenu.mp3');
 
     }
 

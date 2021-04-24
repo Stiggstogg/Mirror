@@ -1,4 +1,5 @@
 import TextStyle from "../helper/textStyles";
+import MusicPlayer from "../helper/musicPlayer";
 
 /**
  * "Home" scene: Main game menu scene
@@ -39,13 +40,9 @@ export default class gameScene extends Phaser.Scene {
         // Add keyboard inputs
         this.addKeys();
 
-        this.section1 = this.sound.add('section1');
-        this.section2 = this.sound.add('section2');
-
-        this.section1.on('complete', function() { this.section2.play()}, this);
-        this.section2.on('complete', function() { this.section1.play()}, this);
-
-        this.section2.play();
+        // Sound
+        this.addSound();
+        this.musicMenu.start();
 
     }
 
@@ -160,12 +157,31 @@ export default class gameScene extends Phaser.Scene {
 
     }
 
-
     /**
      * Start the game
      */
     startGame() {
-        this.scene.start('Game', {newGame: true, finished: false});
+        this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
     }
+
+    /**
+     * add music
+     */
+    addSound() {
+        this.musicMenu = new MusicPlayer(this, [
+            ['cmenu'],
+            ['fmenu'],
+            ['gmenu'],
+            ['amenu']
+        ],[0, 1, 2, 3]);
+
+        this.musicPlaying = new MusicPlayer(this, [
+            ['cnorm', 'cfast'],
+            ['fnorm', 'ffast'],
+            ['gnorm', 'gfast'],
+            ['anorm', 'afast'],
+        ], [0, 1, 2, 3]);
+    }
+
 
 }
