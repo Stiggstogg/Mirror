@@ -7,7 +7,7 @@ export default class TextStyle {
 
         this.styles = [];
 
-        // style 0 ("Day x" in frame)
+        // style 0 ("Day x" in frame, general title in frame)
         this.styles.push({
             fontFamily: 'VT323',
             fontSize: '50px',
@@ -35,11 +35,11 @@ export default class TextStyle {
             color: '#474476'
         });
 
-        // style 4
+        // style 4 (text in "How to Play" frame)
         this.styles.push({
             fontFamily: 'VT323',
-            fontSize: '50px',
-            color: '#474476'
+            fontSize: '16px',
+            color: '#6dbcb9'
         });
 
         // style 5

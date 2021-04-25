@@ -4,7 +4,7 @@ import MusicPlayer from "../helper/musicPlayer";
 /**
  * "Home" scene: Main game menu scene
  */
-export default class gameScene extends Phaser.Scene {
+export default class homeScene extends Phaser.Scene {
 
     /**
      * Constructor
@@ -148,7 +148,7 @@ export default class gameScene extends Phaser.Scene {
                 this.startGame();
                 break;
             case 1:
-                console.log('How to play!');
+                this.scene.start('Howto', {musicMenu: this.musicMenu});
                 break;
             default:
                 this.startGame();
