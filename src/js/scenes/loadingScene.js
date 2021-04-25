@@ -27,7 +27,7 @@ export default class loadingScene extends Phaser.Scene {
         this.load.addFile(new WebFontFile(this.load, ['VT323']));
 
         // show logo
-        let logo = this.add.sprite(gw/2, gh / 2, 'logo').setScale(5, 5); // logo is already preloaded in 'Boot' scene
+        let logo = this.add.image(gw/2, gh / 2, 'logo').setScale(5, 5); // logo is already preloaded in 'Boot' scene
 
         // text
         this.add.text(gw/2, gh * 0.20, 'CLOWNGAMING', {fontSize: '70px', color: '#FFFF00', fontStyle: 'bold'}).setOrigin(0.5);

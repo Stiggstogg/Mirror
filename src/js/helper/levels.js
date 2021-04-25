@@ -26,7 +26,7 @@ export default class Levels {
         this.originRight = originRight;
 
         // add all levels
-        this.levels.push(this.level3());
+        this.levels.push(this.level1());
         this.levels.push(this.level2());
         this.levels.push(this.level3());
 

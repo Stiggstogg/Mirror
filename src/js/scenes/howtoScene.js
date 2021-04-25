@@ -58,12 +58,16 @@ export default class howtoScene extends Phaser.Scene {
         // Add frame
         this.frame = new Frame(this, 320, 240, 470, 290, 'Title','Text', this.styles);
 
-        // Highlighter
+        // Highlighters
         this.highlighter = this.add.rectangle(8, 8, 304, 304).setOrigin(0).setDepth(1.5);
         this.highlighter.setStrokeStyle(4, 0x8cefb6);
         this.highlighterColors = [0x8cefb6, 0x474476, 0x6dbcb9, 0x4888b7];
         this.highlighterCounter = 0;
         this.highlighter.setVisible(false);
+
+        this.highlighter2 = this.add.rectangle(8, 8, 304, 304).setOrigin(0).setDepth(1.5);
+        this.highlighter2.setStrokeStyle(4, 0x8cefb6);
+        this.highlighter2.setVisible(false);
 
         // change color of the highlighter
         this.time.addEvent({
@@ -79,6 +83,7 @@ export default class howtoScene extends Phaser.Scene {
                 }
 
                 this.highlighter.setStrokeStyle(4, this.highlighterColors[this.highlighterCounter]);
+                this.highlighter2.setStrokeStyle(4, this.highlighterColors[this.highlighterCounter]);
 
             },
             callbackScope: this
@@ -122,7 +127,7 @@ export default class howtoScene extends Phaser.Scene {
             case 0:
                 this.stage++;
 
-                this.frame.changeText('Story', 'The Block universe is divided into 5723 sectors and ruled by the mighty Inspectors.');
+                this.frame.changeText('Story', 'The Block universe is divided into 5879 sectors and ruled by the mighty Inspectors.');
                 this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 10, 'eyes', 0).setDepth(3));
 
                 break;
@@ -143,10 +148,10 @@ export default class howtoScene extends Phaser.Scene {
                 this.frame.changeText('Story', 'Every day the blocks get tasks from the Inspectors which they need to fulfil. ' +
                     'These tasks consist of visiting and touching the three holy pictures Tree, Rocket and Potato in a specific order. ' +
                     'While doing that they should not touch each other and the dangerous X blocks.');
-                this.objectArray.push(this.add.image(this.frame.x - 50, this.frame.y + 10, 'checkpoint', 0).setDepth(3));
-                this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 10, 'checkpoint', 1).setDepth(3));
-                this.objectArray.push(this.add.image(this.frame.x + 50, this.frame.y + 10, 'checkpoint', 2).setDepth(3));
-                this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 50, 'danger', 0).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x , this.frame.y + 23, 'checkpoint', 0).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x + 50, this.frame.y + 23, 'checkpoint', 1).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x + 100, this.frame.y + 23, 'checkpoint', 2).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x + 50, this.frame.y + 57, 'danger', 0).setDepth(3));
 
                 break;
             case 3:
@@ -215,7 +220,7 @@ export default class howtoScene extends Phaser.Scene {
                 this.stage++;
 
                 this.frame.changeText('How To Play', 'This is a cooperative 2 player game where you ' +
-                    'need to work together to deceive the Inspector and maintain the freedom in Sector 273!');
+                    'need to work together to deceive the Inspector and maintain the freedom in Sector 723!');
 
                 break;
             case 8:
@@ -245,7 +250,8 @@ export default class howtoScene extends Phaser.Scene {
             case 10:
                 this.stage++;
 
-                this.highlighter.setPosition(283, 8).setSize(74, 29);
+                this.highlighter.setPosition(8, 145.5).setSize(29, 29);
+                this.highlighter2.setPosition(603, 145.5).setVisible(true).setSize(29, 29);
 
                 this.frame.setPosition(320, 362);
 
@@ -257,6 +263,7 @@ export default class howtoScene extends Phaser.Scene {
 
                 this.highlighter.setPosition(26, 328).setSize(265, 135);
                 this.highlighter.setVisible(true);
+                this.highlighter2.setVisible(false);
 
                 this.frame.setPosition(320, 150)
 

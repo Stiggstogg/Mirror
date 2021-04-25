@@ -54,7 +54,7 @@ export default class homeScene extends Phaser.Scene {
 
         // Menu
         this.createMenu([
-            'Start',
+            'Start (2 Player Co-op)',
             'How to Play'
         ]);
 
@@ -155,10 +155,6 @@ export default class homeScene extends Phaser.Scene {
         this.block1right.jump.play();
         this.block2left.jump.play();
         this.block2right.jump.play();
-
-
-
-
 
     }
 
