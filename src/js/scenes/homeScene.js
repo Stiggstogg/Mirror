@@ -27,9 +27,30 @@ export default class homeScene extends Phaser.Scene {
         // text styles
         this.styles = new TextStyle();
 
+        // add background
+        this.add.image(0, 0, 'menu').setOrigin(0, 0);
+
         // Title
         this.title = this.add.text(this.gw / 2, this.gh * 0.2, 'Inspection in Sector 723', this.styles.get(7))
             .setOrigin(0.5, 0.5);
+
+        this.titleFlipped = this.add.text(this.gw / 2, this.gh * 0.2 + 35, 'Inspection in Sector 723', this.styles.get(7))
+            .setOrigin(0.5, 0.5).setFlipY(true).setAlpha(0);
+
+        // eyes
+        this.eyes = this.add.sprite(this.gw / 2, 360, 'eyes', 5).setOrigin(0.5);
+        this.eyesRight = true;
+        this.eyeAnimTime = 2280;
+
+        // blocks
+        this.block1left = this.add.sprite(this.gw / 2 - 250, 360, 'block1', 1);
+        this.block2left = this.add.sprite(this.gw / 2 - 180, 360, 'block2', 1);
+        this.block1right = this.add.sprite(this.gw / 2 + 250, 360, 'block1', 1).setFlipX(true);
+        this.block2right = this.add.sprite(this.gw / 2 + 180, 360, 'block2', 1).setFlipX(true);
+
+        // Instruction text
+        this.add.text(this.gw / 2, this.gh - 46,
+            'Use arrow keys or W, A, S, D to select\nUse [SPACE] or [ENTER] to confirm', this.styles.get(1)).setOrigin(0.5);
 
         // Menu
         this.createMenu([
@@ -43,6 +64,9 @@ export default class homeScene extends Phaser.Scene {
         // Sound
         this.addSound();
         this.musicMenu.start();
+
+        // add tweens
+        this.addTweens();
 
     }
 
@@ -70,6 +94,72 @@ export default class homeScene extends Phaser.Scene {
 
         this.selected = 0;
         this.highlightSelected();
+    }
+
+    addTweens() {
+
+        // mirror image of title
+        this.tweens.add({
+            targets: this.titleFlipped,
+            delay: 1000,
+            repeatDelay: 1000,
+            alpha: 1,
+            duration: 500,
+            paused: false,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Expo.easeIn'
+        });
+
+        // eyes
+        this.eyes.playAfterDelay('rightToLeft', this.eyeAnimTime);
+
+        this.eyes.on('animationcomplete', function(){
+           this.eyesRight = !this.eyesRight;
+
+           if (this.eyesRight) {
+               this.eyes.playAfterDelay('rightToLeft', this.eyeAnimTime);
+           }
+           else {
+               this.eyes.playAfterDelay('leftToRight', this.eyeAnimTime);
+           }
+
+        }, this);
+
+        // block 1 left
+        this.block1left.jump = this.tweens.add({
+            targets: this.block1left, delay: 0, repeatDelay: 500, y: 330, duration: 400, paused: true, yoyo: true, repeat: 1, ease: 'Cubic.easeOut'});
+
+        // block 1 right
+        this.block1right.jump = this.tweens.add({
+            targets: this.block1right, delay: 2500, repeatDelay: 500, y: 330, duration: 400, paused: true, yoyo: true, repeat: 1, ease: 'Cubic.easeOut'});
+
+        // block 2 left
+        this.block2left.jump = this.tweens.add({
+            targets: this.block2left, delay: 0, repeatDelay: 100, y: 320, duration: 200, paused: true, yoyo: true, repeat: 2, ease: 'Cubic.easeOut'});
+
+        // block 2 right
+        this.block2right.jump = this.tweens.add({
+            targets: this.block2right, delay: 2500, repeatDelay:100, y: 320, duration: 200, paused: true, yoyo: true, repeat: 2, ease: 'Cubic.easeOut'});
+
+        // add timed event for repetition
+        this.time.addEvent({delay: 5000, repeat: -1, callbackScope: this, callback: function () {
+            this.block1left.jump.play();
+            this.block1right.jump.play();
+            this.block2left.jump.play();
+            this.block2right.jump.play();
+            }});
+
+        // perform the first jump
+        this.block1left.jump.play();
+        this.block1right.jump.play();
+        this.block2left.jump.play();
+        this.block2right.jump.play();
+
+
+
+
+
     }
 
     /**

@@ -141,8 +141,8 @@ export default class howtoScene extends Phaser.Scene {
                 this.destroyAll();
 
                 this.frame.changeText('Story', 'Every day the blocks get tasks from the Inspectors which they need to fulfil. ' +
-                    'These tasks consist of visiting and touching the three holy pictures Tree, Rocket and Potato in a specific order ' +
-                    'without touching the dangerous X blocks.');
+                    'These tasks consist of visiting and touching the three holy pictures Tree, Rocket and Potato in a specific order. ' +
+                    'While doing that they should not touch each other and the dangerous X blocks.');
                 this.objectArray.push(this.add.image(this.frame.x - 50, this.frame.y + 10, 'checkpoint', 0).setDepth(3));
                 this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 10, 'checkpoint', 1).setDepth(3));
                 this.objectArray.push(this.add.image(this.frame.x + 50, this.frame.y + 10, 'checkpoint', 2).setDepth(3));
@@ -156,8 +156,37 @@ export default class howtoScene extends Phaser.Scene {
                 this.frame.changeText('Story', 'If the blocks do not fulfil their tasks, they will receive the maximum penalty: ' +
                     'They will be transformed into circles!');
 
+                this.objectArray.push(this.add.image(this.frame.x - 50, this.frame.y + 10, 'block1', 1).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 10, 'block2', 1).setDepth(3));
+                this.objectArray.push(this.add.image(this.frame.x + 50, this.frame.y + 10, 'block3', 1).setDepth(3));
+
+                let round = false;
+
+                this.squareToRound = this.time.addEvent({
+                    delay: 1000,
+                    repeat: -1,
+                    callback: function() {
+                        if (round) {
+                            this.objectArray[0].setFrame(1);
+                            this.objectArray[1].setFrame(1);
+                            this.objectArray[2].setFrame(1);
+                        }
+                        else {
+                            this.objectArray[0].setFrame(2);
+                            this.objectArray[1].setFrame(2);
+                            this.objectArray[2].setFrame(2);
+                        }
+
+                        round = !round;
+
+                    },
+                    callbackScope: this
+                });
+
+
                 break;
             case 4:
+                this.squareToRound.destroy();
                 this.stage++;
                 this.destroyAll();
 
@@ -216,6 +245,16 @@ export default class howtoScene extends Phaser.Scene {
             case 10:
                 this.stage++;
 
+                this.highlighter.setPosition(283, 8).setSize(74, 29);
+
+                this.frame.setPosition(320, 362);
+
+                this.frame.changeText('How To Play', 'Watch out, the pirates move always in the opposite direction of what you tell them!');
+
+                break;
+            case 11:
+                this.stage++;
+
                 this.highlighter.setPosition(26, 328).setSize(265, 135);
                 this.highlighter.setVisible(true);
 
@@ -226,7 +265,7 @@ export default class howtoScene extends Phaser.Scene {
                     'that they are independent.');
 
                 break;
-            case 11:
+            case 12:
                 this.stage++;
 
                 this.highlighter.setPosition(350, 370).setSize(270, 60);
@@ -235,16 +274,16 @@ export default class howtoScene extends Phaser.Scene {
                     'If the pointer moves too far right the Inspector will detect the deception and you will fail the Inspection.');
 
                 break;
-            case 12:
+            case 13:
                 this.stage++;
 
                 this.highlighter.setPosition(440, 430).setSize(90, 35);
 
                 this.frame.changeText('How To Play', 'Try to beat the level and game as fast as possible and ' +
-                    'beat the Par time.');
+                    'beat the Par time (best time of the games developer).');
 
                 break;
-            case 13:
+            case 14:
                 this.stage++;
 
                 this.highlighter.setVisible(false);
@@ -280,6 +319,8 @@ export default class howtoScene extends Phaser.Scene {
         for (let i in this.objectArray) {
             this.objectArray[i].destroy();
             }
+
+        this.objectArray = [];
 
     }
 

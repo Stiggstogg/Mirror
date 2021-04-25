@@ -27,16 +27,20 @@ export default class loadingScene extends Phaser.Scene {
         this.load.addFile(new WebFontFile(this.load, ['VT323']));
 
         // show logo
-        let logo = this.add.sprite(gw/2, gh/2 - gh*0.1, 'logo'); // logo is already preloaded in 'Boot' scene
+        let logo = this.add.sprite(gw/2, gh / 2, 'logo').setScale(5, 5); // logo is already preloaded in 'Boot' scene
+
+        // text
+        this.add.text(gw/2, gh * 0.20, 'CLOWNGAMING', {fontSize: '70px', color: '#FFFF00', fontStyle: 'bold'}).setOrigin(0.5);
+        this.add.text(gw/2, gh * 0.73, 'Loading', {fontSize: '30px', color: '#4888b7'}).setOrigin(0.5);
 
         // progress bar background (e.g grey)
         let bgBar = this.add.graphics();
         let barW = gw * 0.3;            // progress bar width
         let barH = barW * 0.1;          // progress bar height
         let barX = gw / 2 - barW / 2;       // progress bar x coordinate (origin is 0, 0)
-        let barY = gh / 2 - barH / 2   // progress bar y coordinate (origin is 0, 0)
+        let barY = gh * 0.8 - barH / 2;   // progress bar y coordinate (origin is 0, 0)
         bgBar.setPosition(barX, barY);
-        bgBar.fillStyle(0xF5F5F5, 1);
+        bgBar.fillStyle(0x4888b7, 1);
         bgBar.fillRect(0, 0, barW, barH);    // position is 0, 0 as it was already set with ".setPosition()"
 
         // progress bar
@@ -50,7 +54,7 @@ export default class loadingScene extends Phaser.Scene {
             progressBar.clear();
 
             // set style
-            progressBar.fillStyle(0x27ff00, 1);
+            progressBar.fillStyle(0x8cefb6, 1);
 
             // draw rectangle
             progressBar.fillRect(0, 0, value * barW, barH);
@@ -59,6 +63,7 @@ export default class loadingScene extends Phaser.Scene {
 
         // load images
         this.load.image('background', 'assets/images/background.png');  // game background
+        this.load.image('menu', 'assets/images/Menu.png');  // game background
         this.load.image('danger', 'assets/images/Danger.png');          // danger block
         this.load.image('indicator', 'assets/images/Indicator.png');    // indicator
         this.load.image('pointer', 'assets/images/Pointer.png');        // pointer
@@ -85,6 +90,9 @@ export default class loadingScene extends Phaser.Scene {
         this.load.audio('fmenu', 'assets/audio/Fmenu.mp3');
         this.load.audio('gmenu', 'assets/audio/Gmenu.mp3');
         this.load.audio('amenu', 'assets/audio/Amenu.mp3');
+        this.load.audio('gameover', 'assets/audio/GameOver.mp3');
+        this.load.audio('level', 'assets/audio/LevelComplete.mp3');
+        this.load.audio('mission', 'assets/audio/Mission.mp3');
 
     }
 

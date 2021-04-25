@@ -102,8 +102,17 @@ export default class gameScene extends Phaser.Scene {
         // mirror value
         this.mirrorValue = 0;
 
+        // sounds
+        this.gameOverSound = this.sound.add('gameover');
+        this.gameOverSound.on('complete', function() { this.musicMenu.start(); }, this); // start menu music as soon as the game over sound is over.
+        this.levelCompleteSound = this.sound.add('level');
+        this.levelCompleteSound.on('complete', function() { this.musicMenu.start(); }, this); // start menu music as soon as the level is complete sound is over
+
         // write text before the level starts
         this.before(this.finished);
+
+        // fade in
+        this.cameras.main.fadeIn(500, 55, 33, 52);
 
     }
 
@@ -155,24 +164,58 @@ export default class gameScene extends Phaser.Scene {
     gameOver(reason) {
 
         // stop playing music start menu music
-        this.musicMenu.start();
         this.musicPlaying.stop();
+
+        this.cameras.main.shake(250);
+        this.gameOverSound.play();                  // play the game over sound and also start the menu sound as soon as it is finished
 
         this.state = 2;                // set the state to the game over state
         this.frame.setVisible(true);   // make the frame visible
         this.eyes.stop();                // stop the eye animation
 
         this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30,
-            'Day ' + this.levels.selectedLevel, this.styles.get(0))
+            'Inspection Failed!', this.styles.get(0))
             .setOrigin(0.5).setDepth(3);
 
-        let overText = this.add.text(this.frameTopMiddle.x, this.frame.y,
-            'GAME OVER', this.styles.get(3))
-            .setOrigin(0.5).setDepth(3);
+        let overText = this.add.text(this.frameTopLeft.x + 32, this.frameTopLeft.y + 70, 'GAME OVER', this.styles.get(3)).setOrigin(0).setDepth(3);
+
+        switch (reason) {
+            case 'danger':
+                overText.setText('You touched a dangerous X block!\n\nYou will be transformed into circles!');
+                break;
+            case 'block':
+                overText.setText('You touched each other!\n\nYou will be transformed into circles!');
+                break;
+            case 'mirror':
+                overText.setText('Your mirror image was not in sync and the inspector detected your deception!\n\nYou will be transformed into circles!');
+                break;
+            default:
+                overText.setText('\n\n\nYou will be transformed into circles!');
+                break;
+        }
 
         let startText = this.add.text(this.frameTopMiddle.x, this.frameBottomMiddle.y - 30,
             'Press [ENTER] or [SPACE] to Restart\nPress [ESC] to go back to Main Menu' , this.styles.get(1))
             .setOrigin(0.5).setDepth(3);
+
+        let block1 = this.add.image(this.frame.x - 50, this.frame.y + 45, 'block1', 1).setDepth(3);
+        let block2 = this.add.image(this.frame.x, this.frame.y + 45, 'block2', 1).setDepth(3);
+        let block3 = this.add.image(this.frame.x + 50, this.frame.y + 45, 'block3', 1).setDepth(3);
+
+        this.time.addEvent({delay: 1000, repeat: 0, callback: function() {
+
+            block1.setFrame(2);
+            block2.setFrame(2);
+            block3.setFrame(2);
+
+            this.blockManagerLeft.circles();
+            this.blockManagerRight.circles();
+
+        },
+        callbackScope: this
+        });
+
+
     }
 
     /**
@@ -279,11 +322,11 @@ export default class gameScene extends Phaser.Scene {
             pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [ESC] to go back to Main Menu';
         }
         else if (finished) {                                    // game is finished
-            titleText = 'All Days Completed!';
+            titleText = 'Inspection Passed!';
             pressText = 'Press [ENTER] or [SPACE] to Restart\nPress [ESC] to go back to Main Menu';
         }
         else {                                                  // any other levels
-            titleText = 'Day ' + lastLevel + ': Completed!';
+            titleText = 'Day ' + lastLevel + ': Passed!';
             pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [ESC] to go back to Main Menu';
         }
 
@@ -379,8 +422,8 @@ export default class gameScene extends Phaser.Scene {
      */
     levelComplete() {
 
-        this.musicMenu.start(this);
-        this.musicPlaying.stop(this);
+        this.musicPlaying.stop();
+        this.levelCompleteSound.play();             // play the level complete sound and start afterwards the menu sound
 
         // store the time used for this level
         this.levels.levelTimes.push(new Date() - this.gameStartTime);
@@ -394,6 +437,7 @@ export default class gameScene extends Phaser.Scene {
             this.levels.nextLevel();
             this.scene.start('Game', {newGame: false, finished: false, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
+
     }
 
     /**
@@ -508,8 +552,8 @@ export default class gameScene extends Phaser.Scene {
         // update pointer
         this.mirrorPointer.x = 367 + (this.mirrorValue / this.mirrorTolerance * 236);
 
-        // change music mode if mirrorValue is above 66 %
-        if (this.mirrorValue >= this.mirrorTolerance*0.66) {
+        // change music mode if mirrorValue is above 50 %
+        if (this.mirrorValue >= this.mirrorTolerance*0.50) {
             this.musicPlaying.changeMode(1);
         }
         else {

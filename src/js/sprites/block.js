@@ -22,6 +22,8 @@ export default class Block extends Phaser.GameObjects.Sprite {
         this.side = side;                               // side of the mirror where the block is placed ('left' or 'right')
         this.missions = missions                        // missions to complete (checkpoints to pass)
 
+        this.missionSound = this.scene.sound.add('mission');    // sound played when a mission is completed
+
         this.setupSprite();
 
     }
@@ -74,29 +76,13 @@ export default class Block extends Phaser.GameObjects.Sprite {
         }
 
         // change properties in case it is not the normal block
-        switch (this.block) {
-            case 2:                 // pirate
-
-                this.speed = 3;    // speed
-
-                this.moveVector = {         // movement vector for pirate: both directions reversed
-                    leftright: -1,
-                    updown: -1
-                };
-
-                break;
-
-            case 3:                 // glasses
-
-                this.speed = 3;    // speed
-
-                this.moveVector = {         // movement vector for glasses: Left / right movement reversed
-                    leftright: -1,
-                    updown: 1
-                };
-
-                break;
+        if (this.block === 2) {
+            this.moveVector = {         // movement vector for pirate: both directions reversed
+                leftright: -1,
+                updown: -1
+            };
         }
+
 
     }
 
@@ -156,7 +142,21 @@ export default class Block extends Phaser.GameObjects.Sprite {
             if (this.side ==='left') {
 
                 let missionImageNr = this.missionStateImages.getLength() - this.missions.length - 1;
-                this.missionStateImages.getChildren()[missionImageNr].setAlpha(0.5);
+
+                // play tween
+                this.scene.tweens.add({
+                    targets: this.missionStateImages.getChildren()[missionImageNr],
+                    scaleX: 1.4,
+                    scaleY: 1.4,
+                    duration: 200,
+                    yoyo: true,
+                    callbackScope: this,
+                    onComplete: function() { this.missionStateImages.getChildren()[missionImageNr].setAlpha(0.5); }
+                });
+
+                // play sound
+                this.missionSound.play();
+
             }
 
         }

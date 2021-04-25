@@ -28,11 +28,12 @@ export default class TextStyle {
             color: '#8cefb6'
         });
 
-        // style 3 (GAME OVER)
+        // style 3 (game over text)
         this.styles.push({
             fontFamily: 'VT323',
-            fontSize: '70px',
-            color: '#474476'
+            fontSize: '20px',
+            color: '#6dbcb9',
+            wordWrap: {width: 406}
         });
 
         // style 4 (text in "How to Play" frame)
@@ -59,7 +60,7 @@ export default class TextStyle {
         // style 7 (menu title)
         this.styles.push({
             fontFamily: 'VT323',
-            fontSize: '60px',
+            fontSize: '50px',
             color: '#372134'
         });
 

@@ -18,7 +18,7 @@ const config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,  // if true pixel perfect rendering is used
-    backgroundColor: '#4888b7'
+    backgroundColor: '#372134'
 };
 
 const game = new Phaser.Game(config);

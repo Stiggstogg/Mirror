@@ -59,4 +59,13 @@ export default class BlockManager {
         return blocks[this.activeBlock];
     }
 
+    /**
+     * Make circles out of all blocks
+     */
+    circles() {
+        for (let i in this.blocks.getChildren()) {
+            this.blocks.getChildren()[i].setFrame(2);
+        }
+    }
+
 }
