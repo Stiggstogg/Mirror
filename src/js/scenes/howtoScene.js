@@ -204,16 +204,16 @@ export default class howtoScene extends Phaser.Scene {
 
                 this.frame.changeText('Story', 'Sector 723 has always been a role model for all other sectors. ' +
                     'They performed their tasks always fast and without any errors.\n' +
-                    'However, 13 days ago something strange happened! The mirror images of the blocks detached from their counterpart and started their own life. ' +
-                    'All six blocks enjoyed the new freedom and celebrate it with wild parties!');
+                    'However, 13 days ago something strange happened! The mirror images of the blocks detached from their counterparts and started their own life. ' +
+                    'All six blocks enjoyed the new freedom and celebrated it with wild parties!');
 
                 break;
             case 6:
                 this.stage++;
 
                 this.frame.changeText('Story', 'However, today the Inspection Days start!\n\n' +
-                    'The six blocks need to pretend that everything is normal for the next three days to pass the inspection. ' +
-                    'They need to fulfil their tasks and the mirror images and their real counterpart need to move in sync to each other...\nGood Luck!');
+                    'The six blocks need to pretend that everything is normal for the next three days to pass the Inspection. ' +
+                    'They need to fulfil their tasks and the mirror images and their real counterparts need to move in sync to each other...\nGood Luck!');
 
                 break;
             case 7:

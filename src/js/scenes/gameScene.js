@@ -3,16 +3,25 @@ import BlockManager from '../helper/blockManager.js';
 import Levels from '../helper/levels.js';
 import TextStyle from "../helper/textStyles.js";
 
-// "Game" scene: This is the main scene of the game
+/**
+ * "Game" scene: Scene for the main game
+ */
 export default class gameScene extends Phaser.Scene {
 
+    /**
+     * Constructor
+     * @constructor
+     */
     constructor() {
         super({
             key: 'Game'
         });
     }
 
-    // initiate scene parameters
+    /**
+     * Initialize parameters. Get data from the previous scene (music and finishing state)
+     * @param {Object} data - data object containing the musics and if the game is finished or not
+     */
     init(data) {
 
         // parameters
@@ -41,12 +50,9 @@ export default class gameScene extends Phaser.Scene {
 
     }
 
-    // load assets
-    preload() {
-
-    }
-
-    // create objects (executed once after preload())
+    /**
+     * Creates all objects of this scene
+     */
     create() {
 
         // add background
@@ -102,24 +108,25 @@ export default class gameScene extends Phaser.Scene {
         // mirror value
         this.mirrorValue = 0;
 
-        // sounds
+        // add sounds and their listeners
         this.gameOverSound = this.sound.add('gameover');
-        this.gameOverSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the game over sound is over.
+        this.gameOverSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // (save) start menu music as soon as the game over sound is over.
         this.levelCompleteSound = this.sound.add('level');
-        this.levelCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the level is complete sound is over
+        this.levelCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // (save) start menu music as soon as the level is complete sound is over
         this.gameCompleteSound = this.sound.add('game');
-        this.gameCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the level is complete sound is over
+        this.gameCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // (save) start menu music as soon as the level is complete sound is over
 
-        // write text before the level starts
+        // write text before the level starts, provide if the game is finished!
         this.before(this.finished);
 
-        // fade in
+        // fade in at the beginning
         this.cameras.main.fadeIn(500, 55, 33, 52);
 
     }
 
     /**
-     * Update method
+     * Update function for the game loop. Gets movement key inputs, updates blocks, checks for collisions, does the
+     * mirror check, check for mission fulfilment and updates the timer
      * @param {number} time
      * @param {number} delta
      */
@@ -164,7 +171,7 @@ export default class gameScene extends Phaser.Scene {
     }
 
     /**
-     * Executed when the game is over. Triggers any actions and goes back to home screen.
+     * Executed when the game is over. Stops the music, plays the game over sound, shakes camera, shows the frame
      * @param {string} reason - reason why game over was triggered ('danger': collision of block with danger, 'block': collision of block with another block)
      */
     gameOver(reason) {
@@ -172,20 +179,29 @@ export default class gameScene extends Phaser.Scene {
         // stop playing music start menu music
         this.musicPlaying.stop();
 
+        // camera shake
         this.cameras.main.shake(250);
-        this.gameOverSound.play();                  // play the game over sound and also start the menu sound as soon as it is finished
 
-        this.state = 2;                // set the state to the game over state
-        this.frame.setVisible(true);   // make the frame visible
-        this.eyes.stop();                // stop the eye animation
+        // play the game over sound and also start the menu sound as soon as it is finished
+        this.gameOverSound.play();
 
-        this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30,
+        // set the state to the game over state
+        this.state = 2;
+
+        // stop the eye animation
+        this.eyes.stop();
+
+        // frame
+        this.frame.setVisible(true);        // set visibility
+
+        this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30,        // add title text
             'Inspection Failed!', this.styles.get(0))
             .setOrigin(0.5).setDepth(3);
 
-        let overText = this.add.text(this.frameTopLeft.x + 32, this.frameTopLeft.y + 70, 'GAME OVER', this.styles.get(3)).setOrigin(0).setDepth(3);
+        let overText = this.add.text(this.frameTopLeft.x + 32, this.frameTopLeft.y + 70,    // create game over text
+            'GAME OVER', this.styles.get(3)).setOrigin(0).setDepth(3);
 
-        switch (reason) {
+        switch (reason) {               // set game over text based on the reason for the game over
             case 'danger':
                 overText.setText('You touched a dangerous X block!\n\nYou will be transformed into circles!');
                 break;
@@ -200,14 +216,16 @@ export default class gameScene extends Phaser.Scene {
                 break;
         }
 
-        let startText = this.add.text(this.frameTopMiddle.x, this.frameBottomMiddle.y - 30,
+        let startText = this.add.text(this.frameTopMiddle.x, this.frameBottomMiddle.y - 30,         // key instruction text
             'Press [ENTER] or [SPACE] to Restart\nPress [BACKSPACE] to go back to Main Menu' , this.styles.get(1))
             .setOrigin(0.5).setDepth(3);
 
+        // show blocks in frame
         let block1 = this.add.image(this.frame.x - 50, this.frame.y + 45, 'block1', 1).setDepth(3);
         let block2 = this.add.image(this.frame.x, this.frame.y + 45, 'block2', 1).setDepth(3);
         let block3 = this.add.image(this.frame.x + 50, this.frame.y + 45, 'block3', 1).setDepth(3);
 
+        // transform all blocks after one second into circles
         this.time.addEvent({delay: 1000, repeat: 0, callback: function() {
 
             block1.setFrame(2);
@@ -221,7 +239,6 @@ export default class gameScene extends Phaser.Scene {
         callbackScope: this
         });
 
-
     }
 
     /**
@@ -230,16 +247,16 @@ export default class gameScene extends Phaser.Scene {
     spaceKey() {
 
         switch (this.state) {
-            case -1:
+            case -1:                        // if in state "before playing": start playing
                 this.startGame();
                 break;
-            case 0:
+            case 0:                         // if in state "playing": Activate the next block
                 this.blockManagerLeft.activateNext();
                 break;
-            case 1:
+            case 1:                         // if in state "game finished" restart a new game
                 this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
-            case 2:
+            case 2:                         // if in state "game over" restart a new game
                 this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
         }
@@ -252,16 +269,16 @@ export default class gameScene extends Phaser.Scene {
     enterKey() {
 
         switch (this.state) {
-            case -1:
+            case -1:                        // if in state "before playing": start playing
                 this.startGame();
                 break;
-            case 0:
+            case 0:                         // if in state "playing": Activate the next block
                 this.blockManagerRight.activateNext();
                 break;
-            case 1:
+            case 1:                         // if in state "game finished" restart a new game
                 this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
-            case 2:
+            case 2:                         // if in state "game over" restart a new game
                 this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
         }
@@ -269,24 +286,28 @@ export default class gameScene extends Phaser.Scene {
     }
 
     /**
-     * Actions which happen when the backspace key is pressed (depending on the state)
+     * Actions which happen when the backspace key is pressed: go back to main menu
      */
     backKey() {
 
-        this.scene.start('Home', {sequence: this.musicMenu.getSequence()});           // go back to main menu
-        this.musicMenu.stop();
-        this.musicPlaying.stop();
+        this.scene.start('Home', {sequence: this.musicMenu.getSequence()});           // go back to main menu (providing the current chord sequence)
+        this.musicMenu.stop();                                                                  // stop menu music
+        this.musicPlaying.stop();                                                               // stop playing music
 
     }
 
+    /**
+     * Actions when the game starts (players start playing).
+     */
     startGame() {
 
-        // fade out menu music, fade in playing music
+        // stop the menu music and start the playing music in normal mode
         this.musicMenu.stop();
         this.musicPlaying.changeMode(0);
         this.musicPlaying.start();
 
-        this.state = 0;                 // change state to gaming
+        // change state to gaming
+        this.state = 0;
 
         // destroy all texts from the "before" state
         for (let i in this.texts) {
@@ -295,8 +316,11 @@ export default class gameScene extends Phaser.Scene {
 
         this.texts = [];                    // empty array
         this.frame.setVisible(false);       // hide frame
-        this.gameStartTime = new Date();    // set game start time
 
+        // set game start time
+        this.gameStartTime = new Date();
+
+        // start the eye animations
         this.eyeAnimations();
 
     }
@@ -309,20 +333,21 @@ export default class gameScene extends Phaser.Scene {
 
         // set the state depending on if the game is finished or not
         if (finished) {
-            this.state = 1;
+            this.state = 1;         // game is finished
         }
         else {
-            this.state = -1;
+            this.state = -1;        // game is in state "before playing"
         }
 
+        // Frame and text
         this.frame.setVisible(true);   // make the frame visible
         this.texts = [];               // create empty array for texts (as they need to be deleted)
 
-        let titleText;
-        let pressText;
-        let lastLevel = this.levels.selectedLevel - 1;
+        let titleText;                                  // text for the title
+        let pressText;                                  // text with key press instructions
+        let lastLevel = this.levels.selectedLevel - 1;  // get the number of the last level (from the levels object)
 
-        // add the title (level) and press (start) based on the state and the level (different for first level)
+        // add the title (level) and press (start) based on the state and the level (different for first level and if the game is finished)
         if (this.levels.selectedLevel === 1){                   // first level
             titleText = 'Day ' + this.levels.selectedLevel;
             pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [BACKSPACE] to go back to Main Menu';
@@ -336,38 +361,38 @@ export default class gameScene extends Phaser.Scene {
             pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [BACKSPACE] to go back to Main Menu';
         }
 
-        let levelText = this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30, titleText, this.styles.get(0))
+        let levelText = this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30, titleText, this.styles.get(0))     // title text object
             .setOrigin(0.5).setDepth(3);
-        this.texts.push(levelText);
+        this.texts.push(levelText);                                                     // push to the text array object
 
         // add the times (also dependent on the state)
-        let ySpace = 20;
-        let xSpace = 130;
-        let topLeft = {x: this.frameTopLeft.x + 50, y: levelText.y + 40};
+        let ySpace = 20;                                                                // y space between the times
+        let xSpace = 130;                                                               // x space between the times
+        let topLeft = {x: this.frameTopLeft.x + 50, y: levelText.y + 40};               // top left starting point of the times
 
         this.texts.push(this.add.text(topLeft.x + xSpace, topLeft.y,'Your Time', this.styles.get(6)).setOrigin(0.5).setDepth(3));       // headers of the 'table'
         this.texts.push(this.add.text(topLeft.x + xSpace * 2, topLeft.y,'Par Time', this.styles.get(6)).setOrigin(0.5).setDepth(3));
 
-        let level = 0;
+        let level = 0;              // temporary time and text objects
         let totalTime = 0;
         let totalParTime = 0;
         let yourTimeText = '';
         let parTimeText = '';
 
-        for (let i = 0; i < this.levels.numLevels; i++) {
+        for (let i = 0; i < this.levels.numLevels; i++) {           // go through all levels and add the times (or empty values if the levels are not played yet)
 
             level = i+1;        // level number
 
-            this.texts.push(this.add.text(topLeft.x, topLeft.y + ySpace * (i+1), 'Day ' + level, this.styles.get(6))
+            this.texts.push(this.add.text(topLeft.x, topLeft.y + ySpace * (i+1), 'Day ' + level, this.styles.get(6))    // Day label
                 .setOrigin(0, 0.5).setDepth(3));                // day row label
 
             // show only the time of the levels which are already played. In case the game is finished all times are shown
-             if (i+1 < this.levels.selectedLevel || finished) {
+             if (i + 1 < this.levels.selectedLevel || finished) {
 
                 totalTime += this.levels.levelTimes[i];             // calculate the total time of the players
-                totalParTime += this.levels.levels[i].par;  // calculate the total par time
+                totalParTime += this.levels.levels[i].par;          // calculate the total par time
 
-                yourTimeText = this.convertTime(this.levels.levelTimes[i]);
+                yourTimeText = this.convertTime(this.levels.levelTimes[i]);     // convert it to string
                 parTimeText = this.convertTime(this.levels.levels[i].par);
 
             }
@@ -376,7 +401,7 @@ export default class gameScene extends Phaser.Scene {
                 parTimeText = '--';
             }
 
-            // add the times
+            // add the times (your and par)
             this.texts.push(this.add.text(topLeft.x + xSpace, topLeft.y + ySpace * (i+1), yourTimeText,
                 this.styles.get(6)).setOrigin(0.5).setDepth(3));
             this.texts.push(this.add.text(topLeft.x + xSpace * 2, topLeft.y + ySpace * (i+1), parTimeText, this.styles.get(6)).setOrigin(0.5).setDepth(3));
@@ -390,7 +415,7 @@ export default class gameScene extends Phaser.Scene {
         this.texts.push(this.add.text(topLeft.x + xSpace * 2, topLeft.y + ySpace * 5, this.convertTime(totalParTime), this.styles.get(6)).setOrigin(0.5).setDepth(3));
 
 
-        // add the start text
+        // add the press / start text
         this.texts.push(this.add.text(this.frameTopMiddle.x, this.frameBottomMiddle.y - 30,
             pressText, this.styles.get(1)).setOrigin(0.5).setDepth(3));
 
@@ -403,6 +428,7 @@ export default class gameScene extends Phaser.Scene {
      */
     missionsFulfilled(blockManLeft, blockManRight) {
 
+        // get the blocks as array
         let blocksLeft = blockManLeft.blocks.getChildren();
         let blocksRight = blockManRight.blocks.getChildren();
 
@@ -420,7 +446,6 @@ export default class gameScene extends Phaser.Scene {
             this.levelComplete();
         }
 
-
     }
 
     /**
@@ -428,6 +453,7 @@ export default class gameScene extends Phaser.Scene {
      */
     levelComplete() {
 
+        // stop the playing music
         this.musicPlaying.stop();
 
         // store the time used for this level
@@ -436,11 +462,11 @@ export default class gameScene extends Phaser.Scene {
         // If it is the last level, start a new level but with finished = true, so that the game finished things will
         // trigger. If it is not the last level, increase the level and start it.
         if (this.levels.lastLevel()) {
-            this.gameCompleteSound.play();             // play the game complete sound and start afterwards the menu sound
+            this.gameCompleteSound.play();             // play the game complete sound and start afterwards the menu sound (has an event tied to it!)
             this.scene.start('Game', {newGame: false, finished: true, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
         else {
-            this.levelCompleteSound.play();             // play the level complete sound and start afterwards the menu sound
+            this.levelCompleteSound.play();             // play the level complete sound and start afterwards the menu sound (has an event tied to it!)
             this.levels.nextLevel();
             this.scene.start('Game', {newGame: false, finished: false, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
@@ -454,12 +480,14 @@ export default class gameScene extends Phaser.Scene {
      */
     collisionBlockDanger(blockMan, dangerGrp) {
 
+        // get blocks and dangers as arrays
         let blocks = blockMan.blocks.getChildren();
         let dangers = dangerGrp.getChildren();
 
+        // go through all blocks and dangers and check if they intersect (collide)
         for (let i in blocks) {
             for (let j in dangers) {
-                if (Phaser.Geom.Intersects.RectangleToRectangle(blocks[i].getBounds(), dangers.[j].getBounds())) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(blocks[i].getBounds(), dangers.[j].getBounds())) {      // collision check
                     this.gameOver('danger');
                 }
             }
@@ -475,12 +503,15 @@ export default class gameScene extends Phaser.Scene {
      */
     collisionBlockCheckpoint(blockManLeft, blockManRight, checkpointsGrpLeft, checkpointsGrpRight) {
 
+        // get blocks and checkpoints as arrays
         let blocksLeft = blockManLeft.blocks.getChildren();
         let blocksRight = blockManRight.blocks.getChildren();
 
         let checkpointsLeft = checkpointsGrpLeft.getChildren();
         let checkpointsRight = checkpointsGrpRight.getChildren();
 
+        // go through the blocks and the checkpoints on the left side and check if there is a collision on both sides
+        // if yes, the corresponding missions of this block is fulfilled.
         for (let i in blocksLeft) {
             for (let j in checkpointsLeft) {
 
@@ -504,11 +535,13 @@ export default class gameScene extends Phaser.Scene {
      */
     collisionBlockBlock(blockMan) {
 
+        // get the blocks as arrays
         let blocks = blockMan.blocks.getChildren();
 
+        // check for each block if it collides with another one
         for (let i = 0; i < blocks.length; i++) {
             for (let j = i+1; j < blocks.length; j++) {
-                if (Phaser.Geom.Intersects.RectangleToRectangle(blocks.[i].getBounds(), blocks.[j].getBounds())) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(blocks.[i].getBounds(), blocks.[j].getBounds())) {  // collision detection
                     this.gameOver('block');
                 }
             }
@@ -526,13 +559,16 @@ export default class gameScene extends Phaser.Scene {
 
         this.mirrorValue = 0;           // reset mirror value
 
+        // get the blocks as arrays
         let blocksLeft = blockManLeft.blocks.getChildren();
         let blocksRight = blockManRight.blocks.getChildren();
 
-        let left = {x: 0, y: 0};
+        // create the objects for the calculation
+        let left = {x: 0, y: 0};            // coordinate of a specific block relative to the origin (left side: top left; right side: top right)
         let right = {x: 0, y:0};
-        let diff = {x: 0, y: 0};
+        let diff = {x: 0, y: 0};            // difference between the two coordinates
 
+        // calculate the difference between the positions for all blocks and add it up
         for (let i = 0; i < blocksLeft.length; i++) {
 
             // calculate coordinate of the corresponding block to the origin. Origin left side: top left; Origin right side: top right
@@ -556,10 +592,10 @@ export default class gameScene extends Phaser.Scene {
 
         }
 
-        // update pointer
+        // update the mirror pointer based on the mirror value
         this.mirrorPointer.x = 367 + (this.mirrorValue / this.mirrorTolerance * 236);
 
-        // change music mode if mirrorValue is above 50 %
+        // change music mode if mirrorValue is above 50 % (from normal to fast)
         if (this.mirrorValue >= this.mirrorTolerance*0.50) {
             this.musicPlaying.changeMode(1);
         }
@@ -582,9 +618,11 @@ export default class gameScene extends Phaser.Scene {
      */
     convertTime(time) {
 
+        // get minutes and seconds part of the time
         let mm = Math.floor(time / 1000 / 60);      // minutes part of the time
         let ss = time / 1000 - mm * 60;                 // seconds part of the time
 
+        // variables for the display
         let mmDisplay;
         let ssDisplay;
 
@@ -601,19 +639,20 @@ export default class gameScene extends Phaser.Scene {
             ssDisplay = ss.toFixed(0);
         }
 
+        // return string
         return mmDisplay + ':' + ssDisplay;
 
     }
 
     /**
-     * Updates the timer.
+     * Updates the game timer.
      */
     updateTime() {
 
-        let now = new Date();
-        let currentGameTime = now - this.gameStartTime;
+        let now = new Date();                           // get the current time
+        let currentGameTime = now - this.gameStartTime; // calculate the time difference to the time when the game has started
 
-        this.gameTime.setText(this.convertTime(currentGameTime));
+        this.gameTime.setText(this.convertTime(currentGameTime));   // convert the time and show it
 
     }
 
@@ -623,7 +662,7 @@ export default class gameScene extends Phaser.Scene {
     eyeAnimations() {
 
         this.eyeAnimationSequence = [];     // eye animation sequence array
-        this.eyeAnimationCurrent = 0;       // counter for the current eye animation
+        this.eyeAnimationCurrent = 0;       // counter for the current eye animation (which animation is currently playing)
 
         // sequence of the animations (including their delay)
         this.eyeAnimationSequence.push({key: 'midToRight', delay: 1000});
@@ -639,7 +678,7 @@ export default class gameScene extends Phaser.Scene {
         // waits until an animation is complete and then starts the next one
         this.eyes.on('animationcomplete', function(){
 
-            // go to the next animation
+            // go to the next animation (or back to the first if it was the last)
             if (this.eyeAnimationCurrent >= this.eyeAnimationSequence.length - 1) {
                 this.eyeAnimationCurrent = 0;
             }
@@ -652,12 +691,13 @@ export default class gameScene extends Phaser.Scene {
 
         }, this);
 
-        // start the first animation
+        // start the first animation (to initialize the animation, afterwards it runs forever)
         this.eyes.playAfterDelay(this.eyeAnimationSequence[this.eyeAnimationCurrent].key, this.eyeAnimationSequence[this.eyeAnimationCurrent].delay);
 
     }
 
     /**
+     * Save start of the menu music, to prevent that it runs two times!
      * Starts the menu music only if no other music is playing and the current game scene is still active!
      */
     saveStartMenuMusic() {

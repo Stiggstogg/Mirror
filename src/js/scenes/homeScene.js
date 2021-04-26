@@ -8,6 +8,7 @@ export default class homeScene extends Phaser.Scene {
 
     /**
      * Constructor
+     * @constructor
      */
     constructor() {
         super({
@@ -15,14 +16,18 @@ export default class homeScene extends Phaser.Scene {
         });
     }
 
+    /**
+     * Get data from the previous scene (chord sequence)
+     * @param {Object} data - data object containing the chord sequence
+     */
     init(data) {
 
-        this.sequence = data.sequence;
+        this.sequence = data.sequence;      // chord sequence
 
     }
 
     /**
-     * Shows the home screen and waits for the the user to start the game
+     * Shows the home screen and waits for the the user to select a menu entry
      */
     create() {
 
@@ -40,25 +45,26 @@ export default class homeScene extends Phaser.Scene {
         this.title = this.add.text(this.gw / 2, this.gh * 0.2, 'Inspection in Sector 723', this.styles.get(7))
             .setOrigin(0.5, 0.5);
 
+        // mirror image of the title (tween will be added later)
         this.titleFlipped = this.add.text(this.gw / 2, this.gh * 0.2 + 35, 'Inspection in Sector 723', this.styles.get(7))
             .setOrigin(0.5, 0.5).setFlipY(true).setAlpha(0);
 
-        // eyes
-        this.eyes = this.add.sprite(this.gw / 2, 360, 'eyes', 5).setOrigin(0.5);
-        this.eyesRight = true;
-        this.eyeAnimTime = 2280;
+        // eyes (tween will be added later)
+        this.eyes = this.add.sprite(this.gw / 2, 360, 'eyes', 5).setOrigin(0.5);    // sprite (looking to the right
+        this.eyesRight = true;                                                                           // are the eyes looking to the right? In the beginning: yes, they start at right
+        this.eyeAnimTime = 2280;                                                                         // delay until the eyes move again. In total the animation including the delay takes 2500 ms (delay start after the animation which has 11 frames)
 
-        // blocks
+        // blocks (tween will be added later)
         this.block1left = this.add.sprite(this.gw / 2 - 250, 360, 'block1', 1);
         this.block2left = this.add.sprite(this.gw / 2 - 180, 360, 'block2', 1);
         this.block1right = this.add.sprite(this.gw / 2 + 250, 360, 'block1', 1).setFlipX(true);
         this.block2right = this.add.sprite(this.gw / 2 + 180, 360, 'block2', 1).setFlipX(true);
 
-        // Instruction text
+        // Instruction / press key text
         this.add.text(this.gw / 2, this.gh - 46,
             'Use arrow keys or W, A, S, D to select\nUse [SPACE] or [ENTER] to confirm', this.styles.get(1)).setOrigin(0.5);
 
-        // Menu
+        // Create the menu with it's entries
         this.createMenu([
             'Start (2 Player Co-op)',
             'How to Play',
@@ -70,7 +76,7 @@ export default class homeScene extends Phaser.Scene {
 
         // Sound
         this.addSound();
-        this.musicMenu.start();
+        this.musicMenu.start();     // start the menu music
 
         // add tweens
         this.addTweens();
