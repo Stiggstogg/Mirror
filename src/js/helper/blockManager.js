@@ -68,4 +68,15 @@ export default class BlockManager {
         }
     }
 
+    /**
+     * Update all blocks (movement)
+     */
+    updateAll() {
+
+        for (let i in this.blocks.getChildren()) {
+            this.blocks.getChildren()[i].update();
+        }
+
+    }
+
 }

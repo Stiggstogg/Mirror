@@ -69,6 +69,7 @@ export default class loadingScene extends Phaser.Scene {
         this.load.image('pointer', 'assets/images/Pointer.png');        // pointer
         this.load.image('arrow', 'assets/images/Arrow.png');            // arrow
         this.load.image('frame', 'assets/images/Frame.png');            // frame (for text)
+        this.load.image('note', 'assets/images/Note.png');              // note
 
         // load spritesheets
         this.load.spritesheet('block1', 'assets/images/Block1.png', {frameWidth: 25, frameHeight: 25});             // block 1 (normal)
@@ -93,6 +94,7 @@ export default class loadingScene extends Phaser.Scene {
         this.load.audio('gameover', 'assets/audio/GameOver.mp3');
         this.load.audio('level', 'assets/audio/LevelComplete.mp3');
         this.load.audio('mission', 'assets/audio/Mission.mp3');
+        this.load.audio('game', 'assets/audio/GameComplete.mp3');
 
     }
 
@@ -104,7 +106,7 @@ export default class loadingScene extends Phaser.Scene {
         // add animations
         this.addAnimations();
 
-        this.scene.start('Home');
+        this.scene.start('Home', {sequence: [0, 1, 2, 3, 0, 1, 2, 3]});
     }
 
     addAnimations() {

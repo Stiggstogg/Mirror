@@ -43,10 +43,10 @@ export default class TextStyle {
             color: '#6dbcb9'
         });
 
-        // style 5
+        // style 5 (instruction text in music composer)
         this.styles.push({
             fontFamily: 'VT323',
-            fontSize: '40px',
+            fontSize: '30px',
             color: '#6dbcb9'
         });
 

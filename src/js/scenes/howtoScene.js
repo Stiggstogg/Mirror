@@ -114,7 +114,7 @@ export default class howtoScene extends Phaser.Scene {
         // enter and space key
         this.input.keyboard.addKey('Enter').on('down', function() { this.spaceEnterKey() }, this);
         this.input.keyboard.addKey('Space').on('down', function() { this.spaceEnterKey() }, this);
-        this.input.keyboard.addKey('Esc').on('down', function() { this.escKey() }, this);
+        this.input.keyboard.addKey('Backspace').on('down', function() { this.backKey() }, this);
 
     }
 
@@ -257,9 +257,12 @@ export default class howtoScene extends Phaser.Scene {
 
                 this.frame.changeText('How To Play', 'Watch out, the pirates move always in the opposite direction of what you tell them!');
 
+                this.objectArray.push(this.add.image(this.frame.x, this.frame.y + 10, 'block2', 1).setDepth(3));
+
                 break;
             case 11:
                 this.stage++;
+                this.destroyAll();
 
                 this.highlighter.setPosition(26, 328).setSize(265, 135);
                 this.highlighter.setVisible(true);
@@ -305,7 +308,7 @@ export default class howtoScene extends Phaser.Scene {
 
                 break;
             default:
-                this.escKey();
+                this.backKey();
                 break;
         }
 
@@ -313,12 +316,12 @@ export default class howtoScene extends Phaser.Scene {
     }
 
     /**
-     * Action which happens when the esc key is pressed.
+     * Action which happens when the backspace key is pressed.
      */
-    escKey() {
+    backKey() {
 
         this.musicMenu.stop();
-        this.scene.start('Home');
+        this.scene.start('Home', {sequence: this.musicMenu.getSequence()});
 
     }
 
@@ -330,5 +333,4 @@ export default class howtoScene extends Phaser.Scene {
         this.objectArray = [];
 
     }
-
 }

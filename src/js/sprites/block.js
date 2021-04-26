@@ -22,6 +22,12 @@ export default class Block extends Phaser.GameObjects.Sprite {
         this.side = side;                               // side of the mirror where the block is placed ('left' or 'right')
         this.missions = missions                        // missions to complete (checkpoints to pass)
 
+        // movement parameters
+        this.maxVelocity = 3;                           // maximum velocity (px/frame)
+        this.velocity = {x: 0, y: 0};                   // current velocity (px/frame)
+        this.acceleration = 0.3;                        // acceleration (px/frame^2)
+        this.friction = 0.15;                           // friction (px/frame^2)
+
         this.missionSound = this.scene.sound.add('mission');    // sound played when a mission is completed
 
         this.setupSprite();
@@ -46,20 +52,11 @@ export default class Block extends Phaser.GameObjects.Sprite {
         };
 
         /**
-         * Movement multiplier. If left / right or up / down key is is pressed the multiplier is applied to the movement,
+         * Movement multiplier. If left / right / up / down key is is pressed the multiplier is applied to the movement,
          * e.g. to reverse the movements.
-         * @type {{updown: number, leftright: number}}
-         */
-        this.moveVector = {
-            leftright: 1,
-            updown: 1
-        };
-
-        /**
-         * Speed of the block.
          * @type {number}
          */
-        this.speed = 3;
+        this.moveMultiplier = 1;
 
         // set properties according to the side
         if (this.side === 'left') {
@@ -75,12 +72,9 @@ export default class Block extends Phaser.GameObjects.Sprite {
 
         }
 
-        // change properties in case it is not the normal block
+        // change properties to special properties of a specific block
         if (this.block === 2) {
-            this.moveVector = {         // movement vector for pirate: both directions reversed
-                leftright: -1,
-                updown: -1
-            };
+            this.moveMultiplier = -1;         // movement vector for pirate: both directions reversed
         }
 
 
@@ -168,9 +162,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
      */
     keyRight() {
 
-        this.x += this.moveVector.leftright * this.speed;
-
-        this.checkBounds();
+        this.increaseVelocity(this.acceleration * this.moveMultiplier, 'x');
 
     }
 
@@ -179,9 +171,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
      */
     keyLeft() {
 
-        this.x -= this.moveVector.leftright * this.speed;
-
-        this.checkBounds();
+        this.increaseVelocity(-this.acceleration * this.moveMultiplier, 'x');
 
     }
 
@@ -190,9 +180,7 @@ export default class Block extends Phaser.GameObjects.Sprite {
      */
     keyUp() {
 
-        this.y -= this.moveVector.updown * this.speed;
-
-        this.checkBounds();
+        this.increaseVelocity(-this.acceleration * this.moveMultiplier, 'y');
 
     }
 
@@ -201,10 +189,84 @@ export default class Block extends Phaser.GameObjects.Sprite {
      */
     keyDown() {
 
-        this.y += this.moveVector.updown * this.speed;
+        this.increaseVelocity(this.acceleration * this.moveMultiplier, 'y');
+
+    }
+
+    increaseVelocity(acceleration, direction) {
+
+        // change velocity based on the acceleration and direction
+        switch (direction) {
+            case 'x':
+                this.velocity.x += acceleration;                    // increase velocity
+
+                if (this.velocity.x > this.maxVelocity) {                 // check if the maximum velocity is reached and if yes set the velocity to this value
+                    this.velocity.x = this.maxVelocity;
+                }
+                else if (this.velocity.x < - this.maxVelocity) {
+                    this.velocity.x = -this.maxVelocity;
+                }
+
+                break;
+            case 'y':
+                this.velocity.y += acceleration;                    // increase velocity
+
+                if (this.velocity.y > this.maxVelocity) {                 // check if the maximum velocity is reached and if yes set the velocity to this value
+                    this.velocity.y = this.maxVelocity;
+                }
+                else if (this.velocity.y < - this.maxVelocity) {
+                    this.velocity.y = -this.maxVelocity;
+                }
+
+                break;
+        }
+
+    }
+
+    update(args) {
+
+        // get movement direction for x and apply friction accordingly
+        if (this.velocity.x > 0) {                  // moving right
+
+            this.velocity.x -= this.friction;       // substract friction from the velocity
+
+            if (this.velocity.x < 0) {              // check if velocity is smaller than zero (negative friction applied!) and set it back to 0
+                this.velocity.x = 0;
+            }
+
+        } else if (this.velocity.x < 0) {           // moving left
+
+            this.velocity.x += this.friction;       // add (because it is in negative direction) friction from the velocity
+
+            if (this.velocity.x > 0) {              // check if velocity is higher than zero (negative friction applied!) and set it back to 0
+                this.velocity.x = 0;
+            }
+
+        }
+
+        // get movement direction for y and apply friction accordingly
+        if (this.velocity.y > 0) {                  // moving down
+
+            this.velocity.y -= this.friction;       // substract friction from the velocity
+
+            if (this.velocity.y < 0) {              // check if velocity is smaller than zero (negative friction applied!) and set it back to 0
+                this.velocity.y = 0;
+            }
+
+        } else if (this.velocity.y < 0) {           // moving up
+
+            this.velocity.y += this.friction;       // add (because it is in negative direction) friction from the velocity
+
+            if (this.velocity.y > 0) {              // check if velocity is higher than zero (negative friction applied!) and set it back to 0
+                this.velocity.y = 0;
+            }
+
+        }
+
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
 
         this.checkBounds();
-
     }
 
     /**
@@ -229,7 +291,12 @@ export default class Block extends Phaser.GameObjects.Sprite {
      * Deactivate this block.
      */
     deact() {
-        this.setFrame(0);
+        this.setFrame(0);       // set inactive frame
+
+        // stop movement
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+
     }
 
 }

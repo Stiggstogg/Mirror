@@ -15,6 +15,12 @@ export default class homeScene extends Phaser.Scene {
         });
     }
 
+    init(data) {
+
+        this.sequence = data.sequence;
+
+    }
+
     /**
      * Shows the home screen and waits for the the user to start the game
      */
@@ -55,7 +61,8 @@ export default class homeScene extends Phaser.Scene {
         // Menu
         this.createMenu([
             'Start (2 Player Co-op)',
-            'How to Play'
+            'How to Play',
+            'Composer'
         ]);
 
         // Add keyboard inputs
@@ -236,6 +243,9 @@ export default class homeScene extends Phaser.Scene {
             case 1:
                 this.scene.start('Howto', {musicMenu: this.musicMenu});
                 break;
+            case 2:
+                this.scene.start('Composer', {musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
+                break;
             default:
                 this.startGame();
                 break;
@@ -259,14 +269,22 @@ export default class homeScene extends Phaser.Scene {
             ['fmenu'],
             ['gmenu'],
             ['amenu']
-        ],[0, 1, 2, 3]);
+        ], this.sequence);
 
         this.musicPlaying = new MusicPlayer(this, [
             ['cnorm', 'cfast'],
             ['fnorm', 'ffast'],
             ['gnorm', 'gfast'],
             ['anorm', 'afast'],
-        ], [0, 1, 2, 3]);
+        ], this.sequence);
+    }
+
+    saveStartMenuMusic() {
+
+        if (!this.musicMenu.isPlaying && !this.musicPlaying.isPlaying) {
+            this.musicMenu.start();
+        }
+
     }
 
 

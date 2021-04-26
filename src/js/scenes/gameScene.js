@@ -97,16 +97,18 @@ export default class gameScene extends Phaser.Scene {
         // add block change keys and event
         this.input.keyboard.addKey('Space').on('down', function() { this.spaceKey() }, this);
         this.input.keyboard.addKey('Enter').on('down', function() { this.enterKey() }, this);
-        this.input.keyboard.addKey('Esc').on('down', function() { this.escKey() }, this);
+        this.input.keyboard.addKey('Backspace').on('down', function() { this.backKey() }, this);
 
         // mirror value
         this.mirrorValue = 0;
 
         // sounds
         this.gameOverSound = this.sound.add('gameover');
-        this.gameOverSound.on('complete', function() { this.musicMenu.start(); }, this); // start menu music as soon as the game over sound is over.
+        this.gameOverSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the game over sound is over.
         this.levelCompleteSound = this.sound.add('level');
-        this.levelCompleteSound.on('complete', function() { this.musicMenu.start(); }, this); // start menu music as soon as the level is complete sound is over
+        this.levelCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the level is complete sound is over
+        this.gameCompleteSound = this.sound.add('game');
+        this.gameCompleteSound.on('complete', function() { this.saveStartMenuMusic(); }, this); // start menu music as soon as the level is complete sound is over
 
         // write text before the level starts
         this.before(this.finished);
@@ -136,6 +138,10 @@ export default class gameScene extends Phaser.Scene {
             if (this.keysRight.LEFT.isDown) { this.blockManagerRight.getActive().keyLeft(); }
             if (this.keysRight.DOWN.isDown) { this.blockManagerRight.getActive().keyDown(); }
             if (this.keysRight.RIGHT.isDown) { this.blockManagerRight.getActive().keyRight(); }
+
+            // Update all blocks
+            this.blockManagerLeft.updateAll();
+            this.blockManagerRight.updateAll();
 
             // check for collisions
             this.collisionBlockCheckpoint(this.blockManagerLeft, this.blockManagerRight, this.checkpointGroupLeft, this.checkpointGroupRight);     // blocks and checkpoint
@@ -195,7 +201,7 @@ export default class gameScene extends Phaser.Scene {
         }
 
         let startText = this.add.text(this.frameTopMiddle.x, this.frameBottomMiddle.y - 30,
-            'Press [ENTER] or [SPACE] to Restart\nPress [ESC] to go back to Main Menu' , this.styles.get(1))
+            'Press [ENTER] or [SPACE] to Restart\nPress [BACKSPACE] to go back to Main Menu' , this.styles.get(1))
             .setOrigin(0.5).setDepth(3);
 
         let block1 = this.add.image(this.frame.x - 50, this.frame.y + 45, 'block1', 1).setDepth(3);
@@ -263,11 +269,11 @@ export default class gameScene extends Phaser.Scene {
     }
 
     /**
-     * Actions which happen when the esc key is pressed (depending on the state)
+     * Actions which happen when the backspace key is pressed (depending on the state)
      */
-    escKey() {
+    backKey() {
 
-        this.scene.start('Home');           // go back to main menu
+        this.scene.start('Home', {sequence: this.musicMenu.getSequence()});           // go back to main menu
         this.musicMenu.stop();
         this.musicPlaying.stop();
 
@@ -319,15 +325,15 @@ export default class gameScene extends Phaser.Scene {
         // add the title (level) and press (start) based on the state and the level (different for first level)
         if (this.levels.selectedLevel === 1){                   // first level
             titleText = 'Day ' + this.levels.selectedLevel;
-            pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [ESC] to go back to Main Menu';
+            pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [BACKSPACE] to go back to Main Menu';
         }
         else if (finished) {                                    // game is finished
             titleText = 'Inspection Passed!';
-            pressText = 'Press [ENTER] or [SPACE] to Restart\nPress [ESC] to go back to Main Menu';
+            pressText = 'Press [ENTER] or [SPACE] to Restart\nPress [BACKSPACE] to go back to Main Menu';
         }
         else {                                                  // any other levels
             titleText = 'Day ' + lastLevel + ': Passed!';
-            pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [ESC] to go back to Main Menu';
+            pressText = 'Press [ENTER] or [SPACE] to Start Day ' + this.levels.selectedLevel + '\nPress [BACKSPACE] to go back to Main Menu';
         }
 
         let levelText = this.add.text(this.frameTopMiddle.x, this.frameTopMiddle.y + 30, titleText, this.styles.get(0))
@@ -359,10 +365,10 @@ export default class gameScene extends Phaser.Scene {
              if (i+1 < this.levels.selectedLevel || finished) {
 
                 totalTime += this.levels.levelTimes[i];             // calculate the total time of the players
-                totalParTime += this.levels.getCurrentLevel().par;  // calculate the total par time
+                totalParTime += this.levels.levels[i].par;  // calculate the total par time
 
                 yourTimeText = this.convertTime(this.levels.levelTimes[i]);
-                parTimeText = this.convertTime(this.levels.getCurrentLevel().par);
+                parTimeText = this.convertTime(this.levels.levels[i].par);
 
             }
             else {                          // if the levels are not played yet, the times will be empty
@@ -423,7 +429,6 @@ export default class gameScene extends Phaser.Scene {
     levelComplete() {
 
         this.musicPlaying.stop();
-        this.levelCompleteSound.play();             // play the level complete sound and start afterwards the menu sound
 
         // store the time used for this level
         this.levels.levelTimes.push(new Date() - this.gameStartTime);
@@ -431,9 +436,11 @@ export default class gameScene extends Phaser.Scene {
         // If it is the last level, start a new level but with finished = true, so that the game finished things will
         // trigger. If it is not the last level, increase the level and start it.
         if (this.levels.lastLevel()) {
+            this.gameCompleteSound.play();             // play the game complete sound and start afterwards the menu sound
             this.scene.start('Game', {newGame: false, finished: true, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
         else {
+            this.levelCompleteSound.play();             // play the level complete sound and start afterwards the menu sound
             this.levels.nextLevel();
             this.scene.start('Game', {newGame: false, finished: false, levels: this.levels, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
         }
@@ -647,6 +654,17 @@ export default class gameScene extends Phaser.Scene {
 
         // start the first animation
         this.eyes.playAfterDelay(this.eyeAnimationSequence[this.eyeAnimationCurrent].key, this.eyeAnimationSequence[this.eyeAnimationCurrent].delay);
+
+    }
+
+    /**
+     * Starts the menu music only if no other music is playing and the current game scene is still active!
+     */
+    saveStartMenuMusic() {
+
+        if (!this.musicMenu.isPlaying && !this.musicPlaying.isPlaying && this.scene.isActive('Game')) {
+            this.musicMenu.start();
+        }
 
     }
 

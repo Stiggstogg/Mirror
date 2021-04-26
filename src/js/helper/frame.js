@@ -15,7 +15,7 @@ export default class Frame {
         this.height = height;
         this.styles = styles;
 
-        this.pressText = 'Press [ENTER] or [SPACE] to Continue\nPress [ESC] to go back to Main Menu';
+        this.pressText = 'Press [ENTER] or [SPACE] to Continue\nPress [BACKSPACE] to go back to Main Menu';
         this.titleOffsetY = 46;
         this.contentOffset = {x: 32, y: 70};
         this.pressOffsetY = 46;

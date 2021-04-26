@@ -17,6 +17,8 @@ export default class MusicPlayer {
         this.playing = 0;                                   // set the currently playing chord / track to 0 (beginning)
         this.mode = 0;                                      // set the current mode to mode 0
 
+        this.isPlaying = false;
+
     }
 
     /**
@@ -150,6 +152,8 @@ export default class MusicPlayer {
      */
     stop() {
 
+        this.isPlaying = false;
+
         for (let i in this.allTracks) {
             this.allTracks[i].stop();
         }
@@ -161,6 +165,9 @@ export default class MusicPlayer {
      * Starts the music (from beginning)
      */
     start() {
+
+        this.isPlaying = true;
+
         this.playing = 0;       // reset to the beginning
         this.playCurrent();
     }
@@ -171,6 +178,14 @@ export default class MusicPlayer {
      */
     changeSequence(seq) {
         this.sequence = seq;
+    }
+
+    getSequence(){
+        return this.sequence;
+    }
+
+    changeChord(position, number) {
+        this.sequence[position] = number;
     }
 
 }

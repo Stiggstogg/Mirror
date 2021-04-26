@@ -247,7 +247,7 @@ export default class Levels {
                 [3],                 // mission of the pirate block
                 [1, 3],              // mission of the glasses block
             ],
-            par: 53000,                 // par time in ms
+            par: 27000,                 // par time in ms
             layout: [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -292,7 +292,7 @@ export default class Levels {
                 [2, 1],                 // mission of the pirate block
                 [2, 3, 1],              // mission of the glasses block
             ],
-            par: 30000,                 // par time in ms
+            par: 84000,                 // par time in ms
             layout: [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -337,7 +337,7 @@ export default class Levels {
                 [1, 3],                 // mission of the pirate block
                 [2, 3],              // mission of the glasses block
             ],
-            par: 30000,                 // par time in ms
+            par: 245000,                 // par time in ms
             layout: [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 0, 0, 5],
