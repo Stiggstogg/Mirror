@@ -50,7 +50,7 @@ export default class homeScene extends Phaser.Scene {
             .setOrigin(0.5, 0.5).setFlipY(true).setAlpha(0);
 
         // eyes (tween will be added later)
-        this.eyes = this.add.sprite(this.gw / 2, 360, 'eyes', 5).setOrigin(0.5);    // sprite (looking to the right
+        this.eyes = this.add.sprite(this.gw / 2, 360, 'eyes', 5).setOrigin(0.5);    // sprite (looking to the right)
         this.eyesRight = true;                                                                           // are the eyes looking to the right? In the beginning: yes, they start at right
         this.eyeAnimTime = 2280;                                                                         // delay until the eyes move again. In total the animation including the delay takes 2500 ms (delay start after the animation which has 11 frames)
 
@@ -93,25 +93,28 @@ export default class homeScene extends Phaser.Scene {
         this.inactiveStyle = this.styles.get(8);
         this.activeStyle = this.styles.get(9);
 
-        // position and space between
-        let start = {x: this.gw / 2, y: this.title.y + this.gh * 0.2};
-        let ySpace = this.gh * 0.1;
+        // start position and y space between the entries
+        let start = {x: this.gw / 2, y: this.title.y + this.gh * 0.2};      // start position
+        let ySpace = this.gh * 0.1;                                         // ySpace between the entries
 
         this.items = [];
 
-        // create menu items
+        // create menu items (loop through each item)
         for (let i in menuEntries) {
             this.items.push(this.add.text(start.x, start.y + i * ySpace, menuEntries[i])
                 .setOrigin(0.5));
         }
 
-        this.selected = 0;
-        this.highlightSelected();
+        this.selected = 0;              // set which entry is selected (0: first one)
+        this.highlightSelected();       // highlight the selected entry
     }
 
+    /**
+     * Adds all the tweens of the home scene
+     */
     addTweens() {
 
-        // mirror image of title
+        // mirror image of title (flickering mirror image)
         this.tweens.add({
             targets: this.titleFlipped,
             delay: 1000,
@@ -124,46 +127,45 @@ export default class homeScene extends Phaser.Scene {
             ease: 'Expo.easeIn'
         });
 
-        // eyes
-        this.eyes.playAfterDelay('rightToLeft', this.eyeAnimTime);
+        // eyes (of the inspector)
+        this.eyes.playAfterDelay('rightToLeft', this.eyeAnimTime);      // move the eyes from right to left (animation) after a delay
 
-        this.eyes.on('animationcomplete', function(){
-           this.eyesRight = !this.eyesRight;
+        this.eyes.on('animationcomplete', function(){               // listener is added to listen for the animation complete event. This creates an infinite loop of animations
+           this.eyesRight = !this.eyesRight;                                 // toggle the orientation of the eyes
 
-           if (this.eyesRight) {
+           if (this.eyesRight) {                                                // if the eyes are right move the eyes from right to left (animation) after a delay
                this.eyes.playAfterDelay('rightToLeft', this.eyeAnimTime);
            }
-           else {
+           else {                                                               // if the eyes are left move the eyes from left to right (animation) after a delay
                this.eyes.playAfterDelay('leftToRight', this.eyeAnimTime);
            }
 
         }, this);
 
-        // block 1 left
-        this.block1left.jump = this.tweens.add({
+        // create the tweens for the blocks (jumping when the inspector is not looking in their direction)
+        // the tweens are created only for one execution (block 1 jumps twice, block two jumps three times)
+        // The repetion of every cycle is afterwards added with a timed event which triggers the jumps again
+        this.block1left.jump = this.tweens.add({                // block 1 left
             targets: this.block1left, delay: 0, repeatDelay: 500, y: 330, duration: 400, paused: true, yoyo: true, repeat: 1, ease: 'Cubic.easeOut'});
 
-        // block 1 right
-        this.block1right.jump = this.tweens.add({
+        this.block1right.jump = this.tweens.add({               // block 1 right
             targets: this.block1right, delay: 2500, repeatDelay: 500, y: 330, duration: 400, paused: true, yoyo: true, repeat: 1, ease: 'Cubic.easeOut'});
 
-        // block 2 left
-        this.block2left.jump = this.tweens.add({
+        this.block2left.jump = this.tweens.add({                // block 2 left
             targets: this.block2left, delay: 0, repeatDelay: 100, y: 320, duration: 200, paused: true, yoyo: true, repeat: 2, ease: 'Cubic.easeOut'});
 
-        // block 2 right
-        this.block2right.jump = this.tweens.add({
+        this.block2right.jump = this.tweens.add({               // block 2 right
             targets: this.block2right, delay: 2500, repeatDelay:100, y: 320, duration: 200, paused: true, yoyo: true, repeat: 2, ease: 'Cubic.easeOut'});
 
-        // add timed event for repetition
+        // add timed event for the repetition of the jumps
         this.time.addEvent({delay: 5000, repeat: -1, callbackScope: this, callback: function () {
             this.block1left.jump.play();
             this.block1right.jump.play();
             this.block2left.jump.play();
             this.block2right.jump.play();
-            }});
+        }});
 
-        // perform the first jump
+        // perform the first jump (not performed as the first execution happens after the delay)
         this.block1left.jump.play();
         this.block1right.jump.play();
         this.block2left.jump.play();
@@ -172,16 +174,16 @@ export default class homeScene extends Phaser.Scene {
     }
 
     /**
-     * Select the next menu entry
+     * Select the next menu entry (when clicking down)
      */
     selectNext() {
 
         // select the next, or if it is the last entry select the first again
         if (this.selected >= this.items.length - 1) {
-            this.selected = 0;
+            this.selected = 0;              // select the first entry
         }
         else {
-            this.selected++;
+            this.selected++;                // select the previous entry
         }
 
         // highlight the selected entry
@@ -190,16 +192,16 @@ export default class homeScene extends Phaser.Scene {
     }
 
     /**
-     * Select the previous menu entry
+     * Select the previous menu entry (when clicking up)
      */
     selectPrevious() {
 
         // select the previous, or if it is the first entry select the last again
         if (this.selected <= 0) {
-            this.selected = this.items.length -1;
+            this.selected = this.items.length -1;   // select the last entry
         }
         else {
-            this.selected--;
+            this.selected--;                        // select the previous entry
         }
 
         // highlight the selected entry
@@ -225,13 +227,13 @@ export default class homeScene extends Phaser.Scene {
      */
     addKeys() {
 
-        // up and down keys
+        // up and down keys (moving the selection of the entries)
         this.input.keyboard.addKey('Down').on('down', function() { this.selectNext() }, this);
-        this.input.keyboard.addKey('W').on('down', function() { this.selectNext() }, this);
+        this.input.keyboard.addKey('S').on('down', function() { this.selectNext() }, this);
         this.input.keyboard.addKey('Up').on('down', function() { this.selectPrevious() }, this);
-        this.input.keyboard.addKey('S').on('down', function() { this.selectPrevious() }, this);
+        this.input.keyboard.addKey('W').on('down', function() { this.selectPrevious() }, this);
 
-        // enter and space key
+        // enter and space key (confirming a selection)
         this.input.keyboard.addKey('Enter').on('down', function() { this.spaceEnterKey() }, this);
         this.input.keyboard.addKey('Space').on('down', function() { this.spaceEnterKey() }, this);
 
@@ -243,33 +245,39 @@ export default class homeScene extends Phaser.Scene {
     spaceEnterKey() {
 
         switch(this.selected) {
-            case 0:
+            case 0:                 // start the game when the first entry is selected ("Start")
                 this.startGame();
                 break;
-            case 1:
+            case 1:                 // start the "Howto" scene when the "How To Play" entry is selected
                 this.scene.start('Howto', {musicMenu: this.musicMenu});
                 break;
-            case 2:
+            case 2:                 // start the "Composer" scene when the "Music Composer" entry is selected
                 this.scene.start('Composer', {musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
                 break;
             default:
-                this.startGame();
+                this.startGame();   // start the game by default
                 break;
         }
 
     }
 
     /**
-     * Start the game
+     * Starts the main game sceen with all parameters
      */
     startGame() {
+        // starts the main game scene with all the parameters:
+        // newGame: true as it is always a new game when coming from the home screen
+        // finished: false as the game is not finished when coming from the home screen
+        // musicMenu: the menu music (created in this scene)
+        // musicPlaying: the playing music (created in this scene)
         this.scene.start('Game', {newGame: true, finished: false, musicMenu: this.musicMenu, musicPlaying: this.musicPlaying});
     }
 
     /**
-     * add music
+     * Creates the music using the current chord progression (sequence)
      */
     addSound() {
+        // creates the menu music, using the current chord progression (sequence)
         this.musicMenu = new MusicPlayer(this, [
             ['cmenu'],
             ['fmenu'],
@@ -277,6 +285,7 @@ export default class homeScene extends Phaser.Scene {
             ['amenu']
         ], this.sequence);
 
+        // creates the playing music (with its two tempi), using the current chord progression (sequence)
         this.musicPlaying = new MusicPlayer(this, [
             ['cnorm', 'cfast'],
             ['fnorm', 'ffast'],
@@ -285,13 +294,16 @@ export default class homeScene extends Phaser.Scene {
         ], this.sequence);
     }
 
+    /**
+     * Starts the menu music only when it is save to start (no other music runing)
+     */
     saveStartMenuMusic() {
 
+        // Only start the menu music when no other music is playing. TODO: This is a dirty workaround to get rid of some timing bugs when changing scenes, to avoid having to music playing at the same time. It should be addressed properly, e.g. global variable? Additionally this may lead to the bug that the playing music is played in the menu
         if (!this.musicMenu.isPlaying && !this.musicPlaying.isPlaying) {
             this.musicMenu.start();
         }
 
     }
-
 
 }

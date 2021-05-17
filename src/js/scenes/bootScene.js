@@ -5,6 +5,7 @@ export default class bootScene extends Phaser.Scene {
 
     /**
      * Constructor
+     * @constructor
      */
     constructor() {
         super({
