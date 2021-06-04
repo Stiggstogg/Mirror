@@ -128,28 +128,28 @@ export default class Levels {
                         dangerGrpLeft.add(scene.add.sprite(position.left.x, position.left.y, 'danger'));
                         dangerGrpRight.add(scene.add.sprite(position.right.x, position.right.y, 'danger'));
                         break;
-                    case 5:
+                    case 5:                                                                                              // checkpoint 1: tree
                         cpLeft = scene.add.sprite(position.left.x, position.left.y, 'checkpoint', 0);       // create sprite
                         cpRight = scene.add.sprite(position.right.x, position.right.y, 'checkpoint', 0);
-                        cpLeft.cpNum = 1;                                                                       // add checkpoint number
+                        cpLeft.cpNum = 1;                                                                               // add checkpoint number
                         cpRight.cpNum = 1;
-                        cpGrpLeft.add(cpLeft);                                                                  // add to group
+                        cpGrpLeft.add(cpLeft);                                                                          // add to group
                         cpGrpRight.add(cpRight);
                         break;
-                    case 6:
+                    case 6:                                                                                             // checkpoint 2: rocket
                         cpLeft = scene.add.sprite(position.left.x, position.left.y, 'checkpoint', 1);       // create sprite
                         cpRight = scene.add.sprite(position.right.x, position.right.y, 'checkpoint', 1);
-                        cpLeft.cpNum = 2;                                                                       // add checkpoint number
+                        cpLeft.cpNum = 2;                                                                               // add checkpoint number
                         cpRight.cpNum = 2;
-                        cpGrpLeft.add(cpLeft);                                                                  // add to group
+                        cpGrpLeft.add(cpLeft);                                                                          // add to group
                         cpGrpRight.add(cpRight);
                         break;
-                    case 7:
+                    case 7:                                                                                             // checkpoint 3: potato
                         cpLeft = scene.add.sprite(position.left.x, position.left.y, 'checkpoint', 2);       // create sprite
                         cpRight = scene.add.sprite(position.right.x, position.right.y, 'checkpoint', 2);
-                        cpLeft.cpNum = 3;                                                                       // add checkpoint number
+                        cpLeft.cpNum = 3;                                                                               // add checkpoint number
                         cpRight.cpNum = 3;
-                        cpGrpLeft.add(cpLeft);                                                                  // add to group
+                        cpGrpLeft.add(cpLeft);                                                                          // add to group
                         cpGrpRight.add(cpRight);
                         break;
                     default:
