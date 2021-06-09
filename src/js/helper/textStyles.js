@@ -1,11 +1,15 @@
 export default class TextStyle {
 
     /**
-     * Class which provides different text styles.
+     * Class which provides different text styles, which can be used somewhere in the game.
+     * @constructor
      */
+
     constructor() {
 
-        this.styles = [];
+        this.styles = [];           // empty array of styles
+
+        // add all the different styles:
 
         // style 0 ("Day x" in frame, general title in frame)
         this.styles.push({
@@ -82,7 +86,7 @@ export default class TextStyle {
 
     /**
      * Provides the text style with the corresponding number
-     * @param number - text style number
+     * @param {number} number - text style number
      */
     get(number) {
         return this.styles[number];

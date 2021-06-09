@@ -27,7 +27,7 @@ export default class gameScene extends Phaser.Scene {
         // parameters
         this.originLeft = {x: 10, y: 10};                       // origin of the left side (top left) (px)
         this.originRight = {x: 630, y: this.originLeft.y};      // origin of the right side (top right) (px)
-        this.gridSize = 12.5;                                   // size of the grid to place objects (px)
+        this.gridSize = 12.5;                                   // size of the grid to place objects (px). This size is half of the blocks to avoid to have holes which are exactly the same size as the blocks and it is not clear if a block can pass it. Holes should therefore be always either 1 grid size or 3.
 
         this.mirrorTolerance = 100;                              // mirror tolerance (px)
 
